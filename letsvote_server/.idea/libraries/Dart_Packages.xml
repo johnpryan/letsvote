@@ -1,0 +1,108 @@
+<component name="libraryTable">
+  <library name="Dart Packages" type="DartPackagesLibraryType">
+    <properties>
+      <option name="packageNameToDirsMap">
+        <entry key="args">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/args-0.13.7/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="async">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/async-1.13.3/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="charcode">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="collection">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/collection-1.14.5/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="http_parser">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="path">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/path-1.5.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="shelf">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf-0.6.8/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="source_span">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_span-1.4.0/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="stack_trace">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="stream_channel">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/stream_channel-1.6.3/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="string_scanner">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.2/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="typed_data">
+          <value>
+            <list>
+              <option value="$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/typed_data-1.1.5/lib" />
+            </list>
+          </value>
+        </entry>
+      </option>
+    </properties>
+    <CLASSES>
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/args-0.13.7/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/async-1.13.3/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/collection-1.14.5/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/path-1.5.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/shelf-0.6.8/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/source_span-1.4.0/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.1/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/stream_channel-1.6.3/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.2/lib" />
+      <root url="file://$USER_HOME$/.pub-cache/hosted/pub.dartlang.org/typed_data-1.1.5/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
