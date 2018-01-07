@@ -7,8 +7,11 @@ version: 0.0.1
 environment:
   sdk: '>=1.20.1 <2.0.0'
 
-#dependencies:
-#  path: ^1.4.1
+dependencies:
+  args: ^0.13.7
+  shelf: ^0.6.0
+  shelf_static: ^0.2.7
+  shelf_route: ^0.14.3
 
 dev_dependencies:
   browser: ^0.10.0
