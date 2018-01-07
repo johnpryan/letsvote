@@ -18,8 +18,7 @@ void main(List<String> args) {
   var portEnv = Platform.environment['PORT'];
   var port = portEnv == null ? 9999 : int.parse(portEnv);
 
-  var parser = new ArgParser()
-    ..addOption('port', abbr: 'p', defaultsTo: '8080');
+  var parser = new ArgParser()..addOption('port', abbr: 'p', defaultsTo: null);
 
   var result = parser.parse(args);
 
