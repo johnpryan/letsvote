@@ -1,8 +1,6 @@
 name: letsvote_web
 description: An absolute bare-bones web app.
 version: 0.0.1
-#homepage: https://www.example.com
-#author: john <email@example.com>
 
 environment:
   sdk: '>=1.20.1 <2.0.0'
@@ -12,16 +10,24 @@ dependencies:
   shelf: ^0.6.0
   shelf_static: ^0.2.7
   shelf_route: ^0.14.3
+  shelf_cors: any
+  letsvote:
+    path: ../letsvote
+  polymer: ^1.0.0-rc.17
+  polymer_elements: ^1.0.0-rc.9
+  web_components: ^0.12.5
+  http: ^0.11.0
 
 dev_dependencies:
   browser: ^0.10.0
   dart_to_js_script_rewriter: ^1.0.1
 
-transformers:
-- dart_to_js_script_rewriter
+dependency_overrides:
+  # https://github.com/dart-lang/code_transformers/commit/75301f3c8fd5a6805b38e996de8ed433b3878886#diff-fb2d52cd953afedcafc9fe7629c6f132
+  cli_util: '>=0.1.0 <0.2.0'
 
-# Uncomment the following in sdk 1.24+ to make pub serve
-# use dartdevc (webdev.dartlang.org/tools/dartdevc).
-#web:
-#  compiler:
-#    debug: dartdevc
+transformers:
+- polymer:
+    entry_points:
+      - web/index.html
+- dart_to_js_script_rewriter

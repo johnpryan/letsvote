@@ -1,0 +1,35 @@
+<dom-module id="lv-app">
+    <style>
+        :host {
+            @apply(--layout-vertical);
+            @apply(--layout-fit);
+        }
+
+        neon-animated-pages {
+            @apply(--layout-flex);
+            @apply(--layout-vertical);
+        }
+
+        paper-card {
+            @apply(--layout-flex);
+            margin: 8px;
+        }
+    </style>
+    <template>
+        <template is="dom-if" if="[[isLoading]]">
+            <paper-spinner active></paper-spinner>
+        </template>
+        <template is="dom-if" if="[[!isLoading]]">
+            <neon-animated-pages selected="[[currentPageIndex]]"
+                                 entry-animation="fade-in-animation"
+                                 exit-animation="fade-out-animation">
+                <neon-animatable>
+                    <lv-home controller="[[controller]]"></lv-home>
+                </neon-animatable>
+                <neon-animatable>
+                    <lv-submission controller="[[controller]]"></lv-submission>
+                </neon-animatable>
+            </neon-animated-pages>
+        </template>
+    </template>
+</dom-module>

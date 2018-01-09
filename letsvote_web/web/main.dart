@@ -1,5 +1,9 @@
-import 'dart:html';
+import 'dart:async';
+import 'package:polymer/polymer.dart';
 
-void main() {
-  querySelector('#output').text = 'Your Dart app is running.';
+//ignore: unused_import
+import 'components/lv_app.dart';
+
+Future<Null> main() async {
+  await initPolymer();
 }

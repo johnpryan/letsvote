@@ -6,6 +6,8 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf_static/shelf_static.dart' as shelf_static;
 import 'package:shelf_route/shelf_route.dart' as shelf_route;
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_cors/shelf_cors.dart' as shelf_cors;
+import 'package:letsvote/server.dart' as letsvote;
 
 void main(List<String> args) {
   // Get the path to this app's static HTML and other generated files. Assumes
@@ -32,9 +34,20 @@ void main(List<String> args) {
 
   var appRouter = shelf_route.router();
 
+  var server = new letsvote.Server();
+  server.configureRoutes(appRouter);
+
   var pipeline = new shelf.Pipeline();
   var cascade =
       new shelf.Cascade().add(staticHandler).add(appRouter.handler).handler;
+  var corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST'
+  };
+  var corsMiddleware =
+      shelf_cors.createCorsHeadersMiddleware(corsHeaders: corsHeaders);
+  pipeline = pipeline.addMiddleware(corsMiddleware);
   var handler = pipeline.addHandler(cascade);
 
   io.serve(handler, '0.0.0.0', port).then((server) {
