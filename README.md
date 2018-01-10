@@ -11,7 +11,6 @@ Use pub to run the web app:
 
 ```
 cd letsvote_web
-pub get
 pub serve
 ```
 
@@ -19,7 +18,6 @@ Use flutter to run the mobile app:
 
 ```
 cd letsvote_mobile
-flutter packages get
 flutter run
 ```
 
@@ -27,7 +25,6 @@ Use dart to run the web server:
 
 ```
 cd letsvote_web
-pub get
 pub run bin/server.dart
 ```
 
