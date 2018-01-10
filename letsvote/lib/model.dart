@@ -9,8 +9,9 @@ class Election extends _$ElectionSerializerMixin {
   final String id;
   final String topic;
   final List<Voter> voters;
+  final List<Idea> ideas;
 
-  Election(this.id, this.topic, this.voters);
+  Election(this.id, this.topic, this.voters, this.ideas);
 
   factory Election.fromJson(json) => _$ElectionFromJson(json);
 }
@@ -22,6 +23,16 @@ class Voter extends _$VoterSerializerMixin {
   Voter(this.name);
 
   factory Voter.fromJson(json) => _$VoterFromJson(json);
+}
+
+@JsonSerializable()
+class Idea extends _$IdeaSerializerMixin {
+  final String name;
+  final String authorName;
+  final int votes;
+
+  Idea(this.name, this.authorName, this.votes);
+  factory Idea.fromJson(json) => _$IdeaFromJson(json);
 }
 
 @JsonSerializable()
@@ -42,6 +53,16 @@ class JoinElectionRequest extends _$JoinElectionRequestSerializerMixin {
 
   factory JoinElectionRequest.fromJson(json) =>
       _$JoinElectionRequestFromJson(json);
+}
+
+@JsonSerializable()
+class SubmitIdeaRequest extends _$SubmitIdeaRequestSerializerMixin {
+  final String username;
+  final String idea;
+
+  SubmitIdeaRequest(this.username, this.idea);
+
+  factory SubmitIdeaRequest.fromJson(json) => _$SubmitIdeaRequestFromJson(json);
 }
 
 @JsonSerializable()

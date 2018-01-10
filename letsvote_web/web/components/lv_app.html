@@ -21,22 +21,47 @@
         </template>
         <template is="dom-if" if="[[!isLoading]]">
             <neon-animated-pages selected="[[currentPageIndex]]"
-                                 entry-animation="fade-in-animation"
-                                 exit-animation="fade-out-animation">
+                                 entry-animation="slide-from-right-animation"
+                                 exit-animation="slide-left-animation">
                 <neon-animatable>
-                    <!-- AppState.home -->
+                    <!-- Page.home -->
                     <h1>Let's Vote!</h1>
                     <p>Create a new vote or join an existing vote</p>
-                    <paper-button on-tap="handleCreate">Create</paper-button>
-                    <paper-button on-tap="handleJoin">Join</paper-button>
+                    <paper-button on-tap="handleStartCreate">Create</paper-button>
+                    <paper-button on-tap="handleStartJoin">Join</paper-button>
                 </neon-animatable>
                 <neon-animatable>
-                    <!-- AppState.create -->
-                    <p>create</p>
+                    <!-- Page.create -->
+                    <p>Create a new vote:</p>
+                    <paper-input placeholder="Enter a topic"
+                                 value="{{createTopic}}"></paper-input>
+                    <paper-button on-tap="handleCreate">Submit
+                    </paper-button>
                 </neon-animatable>
                 <neon-animatable>
-                    <!-- AppState.joining -->
-                    <p>joining</p>
+                    <!-- Page.joining -->
+                    <p>Enter the code for your vote:</p>
+                    <paper-input placeholder="4-letter code"
+                                 value="{{enteredCode}}"></paper-input>
+                    <paper-button on-tap="handleJoin">Submit
+                    </paper-button>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- Page.username -->
+                    <p>Enter your name:</p>
+                    <paper-input placeholder="John Doe"
+                                 value="{{enteredUsername}}"></paper-input>
+                    <paper-button on-tap="handleNameEntered">Submit
+                    </paper-button>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- Page.ideaSubmission -->
+                    <p>Topic: [[topic]]</p>
+                    <p>Enter an idea:</p>
+                    <paper-input placeholder="Idea"
+                                 value="{{enteredIdea}}"></paper-input>
+                    <paper-button on-tap="handleIdeaEntered">Submit
+                    </paper-button>
                 </neon-animatable>
             </neon-animated-pages>
         </template>

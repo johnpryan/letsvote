@@ -8,7 +8,7 @@ class ElectionServer {
 
   Election createElection(String topic) {
     var id = _getNextId();
-    var e = new Election(id, topic, []);
+    var e = new Election(id, topic, [], []);
     _elections[id] = e;
     return e;
   }
@@ -29,6 +29,18 @@ class ElectionServer {
       }
     }
     election.voters.add(new Voter(username));
+    return election;
+  }
+
+  Election submitIdea(String electionId, String authorName, String ideaName) {
+    var election = getElection(electionId);
+    var existing = election.ideas
+        .firstWhere((i) => i.name == ideaName, orElse: () => null);
+    if (existing != null) {
+      return election;
+    }
+    var idea = new Idea(ideaName, authorName, 0);
+    election.ideas.add(idea);
     return election;
   }
 

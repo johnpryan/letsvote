@@ -15,7 +15,15 @@ class CreateElection extends JsonRequest {
   }
 
   static Uri _createUri(Uri host) {
-    return host.replace(path: 'create');
+    return host.replace(path: 'election');
+  }
+}
+
+class GetElection extends JsonRequest {
+  GetElection(Uri host, String id) : super('GET', _createUri(host, id));
+
+  static Uri _createUri(Uri host, String id) {
+    return host.replace(path: 'election/$id');
   }
 }
 
@@ -26,6 +34,17 @@ class JoinElection extends JsonRequest {
   }
 
   static Uri _createUri(Uri host, String id) {
-    return host.replace(path: 'join/$id');
+    return host.replace(path: 'election/$id/user');
+  }
+}
+
+class SubmitIdea extends JsonRequest {
+  SubmitIdea(Uri host, String username, String idea, String id)
+      : super('POST', _createUri(host, id)) {
+    body = JSON.encode(new SubmitIdeaRequest(username, idea));
+  }
+
+  static Uri _createUri(Uri host, String id) {
+    return host.replace(path: 'election/$id/idea');
   }
 }

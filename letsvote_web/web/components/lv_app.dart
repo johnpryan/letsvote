@@ -28,41 +28,70 @@ import 'package:polymer_elements/paper_input.dart';
 import 'package:polymer_elements/paper_button.dart';
 
 @PolymerRegister(LvApp.tag)
-class LvApp extends PolymerElement {
+class LvApp extends PolymerElement implements AppView {
   static const String tag = 'lv-app';
 
-  AppController controller;
+  AppController _controller;
 
   void set currentPageIndex(int i) => set('currentPageIndex', i);
   void set isLoading(bool l) => set('isLoading', l);
 
   LvApp.created() : super.created();
 
-  String get topic => get('topic');
+  String get createTopic => get('createTopic');
+  String get enteredUsername => get('enteredUsername');
+  String get enteredIdea => get('enteredIdea');
+  String get enteredCode => get('enteredCode');
+  void set topic(String topic) => set('topic', topic);
 
   Future<Null> ready() async {
     var client = new BrowserClient();
     var services = new AppServices(new BrowserConfigService(client));
     var appContext = new AppContext(client, services);
-    controller = new AppController(appContext);
-    controller.onStateChanged.listen(_handleAppStateChanged);
+    var controller = new AppController(appContext);
 
     isLoading = true;
-    await controller.init();
+    await controller.init(this);
     isLoading = false;
   }
 
-  void _handleAppStateChanged(AppState state) {
-    currentPageIndex = state.index;
+  @reflectable
+  handleStartCreate(e, d) async {
+    _controller.startByCreating();
   }
 
   @reflectable
   handleCreate(e, d) async {
-    await controller.create(this.topic);
+    _controller.create(createTopic);
   }
 
   @reflectable
   handleJoin(e, d) async {
-    controller.showJoiningPage();
+    _controller.join(enteredCode);
+    _controller.goTo(Page.username);
+  }
+
+  @reflectable
+  handleStartJoin(e, d) async {
+    _controller.startByJoining();
+  }
+
+  @reflectable
+  handleNameEntered(e, d) {
+    _controller.setName(enteredUsername);
+  }
+
+  @reflectable
+  handleIdeaEntered(e, d) {
+    _controller.setIdea(enteredIdea);
+  }
+
+  void renderPage(Page state) {
+    currentPageIndex = state.index;
+    topic = _controller?.election?.topic;
+  }
+
+  void set controller(AppController controller) {
+    _controller = controller;
   }
 }

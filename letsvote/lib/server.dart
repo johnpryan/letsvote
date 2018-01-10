@@ -14,9 +14,10 @@ class Server {
   Server() : _service = new ElectionServer();
 
   void configureRoutes(Router router) {
-    router.post("/create", handleCreate);
-    router.post("/check/{id}", handleCheck);
-    router.post("/join/{id}", handleJoin);
+    router.post("/election", handleCreate);
+    router.get("/election/{id}", handleGet);
+    router.post("/election/{id}/user", handleJoin);
+    router.post("/election/{id}/idea", handleSubmitIdea);
   }
 
   Future<Response> handleCreate(Request req) async {
@@ -26,7 +27,7 @@ class Server {
     return new Response.ok(JSON.encode(election));
   }
 
-  Response handleCheck(Request req) {
+  Response handleGet(Request req) {
     var id = getPathParameter(req, 'id');
     var election = _service.getElection(id);
     if (election == null) {
@@ -47,6 +48,24 @@ class Server {
 
     try {
       var election = _service.joinElection(id, request.username);
+      return new Response.ok(JSON.encode(election));
+    } on ServiceException catch (e) {
+      return new Response.internalServerError(body: e.msg);
+    }
+  }
+
+  Future<Response> handleSubmitIdea(Request req) async {
+    var body = await req.readAsString();
+    var id = getPathParameter(req, 'id');
+
+    if (!_service.hasElection(id)) {
+      return new Response.notFound("");
+    }
+
+    var request = new SubmitIdeaRequest.fromJson(JSON.decode(body));
+
+    try {
+      var election = _service.submitIdea(id, request.username, request.idea);
       return new Response.ok(JSON.encode(election));
     } on ServiceException catch (e) {
       return new Response.internalServerError(body: e.msg);
