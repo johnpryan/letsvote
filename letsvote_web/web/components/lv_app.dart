@@ -22,33 +22,30 @@ import 'package:polymer_elements/neon_animation.dart';
 import 'package:polymer_elements/iron_flex_layout.dart';
 // ignore: unused_import
 import 'package:polymer_elements/paper_spinner.dart';
-
-// ignore: unused_import
-import 'lv_home.dart';
-// ignore: unused_import
-import 'lv_create.dart';
-// ignore: unused_import
-import 'lv_joining.dart';
-
-import 'proxies.dart';
+//ignore: unused_import
+import 'package:polymer_elements/paper_input.dart';
+//ignore: unused_import
+import 'package:polymer_elements/paper_button.dart';
 
 @PolymerRegister(LvApp.tag)
 class LvApp extends PolymerElement {
   static const String tag = 'lv-app';
 
-  void set controllerProxy(AppControllerProxy c) => set('controller', c);
+  AppController controller;
+
   void set currentPageIndex(int i) => set('currentPageIndex', i);
   void set isLoading(bool l) => set('isLoading', l);
 
   LvApp.created() : super.created();
 
+  String get topic => get('topic');
+
   Future<Null> ready() async {
     var client = new BrowserClient();
     var services = new AppServices(new BrowserConfigService(client));
     var appContext = new AppContext(client, services);
-    var controller = new AppController(appContext);
+    controller = new AppController(appContext);
     controller.onStateChanged.listen(_handleAppStateChanged);
-    controllerProxy = new AppControllerProxy(controller);
 
     isLoading = true;
     await controller.init();
@@ -57,5 +54,15 @@ class LvApp extends PolymerElement {
 
   void _handleAppStateChanged(AppState state) {
     currentPageIndex = state.index;
+  }
+
+  @reflectable
+  handleCreate(e, d) async {
+    await controller.create(this.topic);
+  }
+
+  @reflectable
+  handleJoin(e, d) async {
+    controller.showJoiningPage();
   }
 }

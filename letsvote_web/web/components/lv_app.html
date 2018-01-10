@@ -25,15 +25,18 @@
                                  exit-animation="fade-out-animation">
                 <neon-animatable>
                     <!-- AppState.home -->
-                    <lv-home controller="[[controller]]"></lv-home>
+                    <h1>Let's Vote!</h1>
+                    <p>Create a new vote or join an existing vote</p>
+                    <paper-button on-tap="handleCreate">Create</paper-button>
+                    <paper-button on-tap="handleJoin">Join</paper-button>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- AppState.create -->
-                    <lv-create controller="[[controller]]"></lv-create>
+                    <p>create</p>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- AppState.joining -->
-                    <lv-joining controller="[[controller]]"></lv-joining>
+                    <p>joining</p>
                 </neon-animatable>
             </neon-animated-pages>
         </template>
