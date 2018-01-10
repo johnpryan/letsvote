@@ -35,5 +35,18 @@ pub run bin/server.dart
 
 Use `letsvote_web/web/config.yaml` to configure what server the web connects to.
 
+# IntellJ multi-module setup
+
+It is convinient to have a single project that contains each sub-project as a
+module.
+
+1. open project settings (cmd+;)
+2. open "Modules" page
+3. remove the exisiting module
+4. click "+" and select letsvote_mobile.iml file
+5. click "+" and select letsvote_web.iml file
+6. click "+" and select letsvote_server.iml file
 
 
+After Step 3 Intellij will need the Flutter SDK to be set again. Go to
+Preferences (cmd+,) and re-select your flutter SDK path
