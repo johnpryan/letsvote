@@ -41,6 +41,10 @@ class AppController {
     setState(AppState.joining);
   }
 
+  void showJoiningPage() {
+    setState(AppState.joining);
+  }
+
   Future join(String username, String id) {}
 }
 

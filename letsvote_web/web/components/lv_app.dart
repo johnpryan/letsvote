@@ -25,6 +25,10 @@ import 'package:polymer_elements/paper_spinner.dart';
 
 // ignore: unused_import
 import 'lv_home.dart';
+// ignore: unused_import
+import 'lv_create.dart';
+// ignore: unused_import
+import 'lv_joining.dart';
 
 import 'proxies.dart';
 
@@ -43,10 +47,15 @@ class LvApp extends PolymerElement {
     var services = new AppServices(new BrowserConfigService(client));
     var appContext = new AppContext(client, services);
     var controller = new AppController(appContext);
+    controller.onStateChanged.listen(_handleAppStateChanged);
     controllerProxy = new AppControllerProxy(controller);
+
     isLoading = true;
     await controller.init();
     isLoading = false;
-    currentPageIndex = 0;
+  }
+
+  void _handleAppStateChanged(AppState state) {
+    currentPageIndex = state.index;
   }
 }

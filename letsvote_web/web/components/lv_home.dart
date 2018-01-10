@@ -1,9 +1,6 @@
 @HtmlImport('lv_home.html')
 library lv_home;
 
-import 'dart:async';
-import 'dart:html';
-
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
 
@@ -18,20 +15,20 @@ import 'proxies.dart';
 class LvHome extends PolymerElement {
   static const String tag = 'lv-home';
 
-  @Property(observer: 'controllerChanged')
+  @property
   AppControllerProxy controller;
 
   String get topic => get('topic');
 
   LvHome.created() : super.created();
 
-//  @reflectable
-//  void controllerChanged(_, __) {
-//    print("changed controller $controller");
-//  }
+  @reflectable
+  handleCreate(e, d) async {
+    await controller.controller.create(this.topic);
+  }
 
   @reflectable
-  Future handleCreate(CustomEvent e, dynamic d) async {
-    await controller.controller.create(this.topic);
+  handleJoin(e, d) async {
+    controller.controller.showJoiningPage();
   }
 }

@@ -24,10 +24,16 @@
                                  entry-animation="fade-in-animation"
                                  exit-animation="fade-out-animation">
                 <neon-animatable>
+                    <!-- AppState.home -->
                     <lv-home controller="[[controller]]"></lv-home>
                 </neon-animatable>
                 <neon-animatable>
-                    <lv-submission controller="[[controller]]"></lv-submission>
+                    <!-- AppState.create -->
+                    <lv-create controller="[[controller]]"></lv-create>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- AppState.joining -->
+                    <lv-joining controller="[[controller]]"></lv-joining>
                 </neon-animatable>
             </neon-animated-pages>
         </template>
