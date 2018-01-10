@@ -37,7 +37,7 @@ Use `letsvote_web/web/config.yaml` to configure what server the web connects to.
 
 # IntellJ multi-module setup
 
-It is convinient to have a single project that contains each sub-project as a
+It is convenient to have a single project that contains each sub-project as a
 module.
 
 1. open project settings (cmd+;)
