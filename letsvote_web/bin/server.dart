@@ -43,7 +43,7 @@ void main(List<String> args) {
   var corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST'
+    'Access-Control-Allow-Methods': 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS,'
   };
   var corsMiddleware =
       shelf_cors.createCorsHeadersMiddleware(corsHeaders: corsHeaders);

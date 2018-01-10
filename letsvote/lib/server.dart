@@ -18,6 +18,8 @@ class Server {
     router.get("/election/{id}", handleGet);
     router.post("/election/{id}/user", handleJoin);
     router.post("/election/{id}/idea", handleSubmitIdea);
+    router.post("/election/{id}/vote", handleVote);
+    router.put("/election/{id}/close", handleClose);
   }
 
   Future<Response> handleCreate(Request req) async {
@@ -62,7 +64,7 @@ class Server {
       return new Response.notFound("");
     }
 
-    var request = new SubmitIdeaRequest.fromJson(JSON.decode(body));
+    var request = new IdeaRequest.fromJson(JSON.decode(body));
 
     try {
       var election = _service.submitIdea(id, request.username, request.idea);
@@ -70,5 +72,39 @@ class Server {
     } on ServiceException catch (e) {
       return new Response.internalServerError(body: e.msg);
     }
+  }
+
+  Future<Response> handleVote(Request req) async {
+    var body = await req.readAsString();
+    var id = getPathParameter(req, 'id');
+
+    if (!_service.hasElection(id)) {
+      return new Response.notFound("");
+    }
+
+    var request = new IdeaRequest.fromJson(JSON.decode(body));
+
+    try {
+      var election = _service.vote(id, request.username, request.idea);
+      return new Response.ok(JSON.encode(election));
+    } on ServiceException catch (e) {
+      return new Response.internalServerError(body: e.msg);
+    }
+  }
+
+  Future<Response> handleClose(Request req) async {
+    var id = getPathParameter(req, 'id');
+
+    if (!_service.hasElection(id)) {
+      return new Response.notFound("");
+    }
+
+    try {
+      var election = _service.close(id);
+      return new Response.ok(JSON.encode(election));
+    } on ServiceException catch (e) {
+      return new Response.internalServerError(body: e.msg);
+    }
+
   }
 }

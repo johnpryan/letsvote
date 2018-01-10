@@ -18,11 +18,15 @@ class AppController {
   AppView _view;
   String _username;
   bool isCreator;
+  Page _currentPage;
 
   AppController(this._context);
 
   Election get election => _election;
   ElectionService get _service => _context.services.election;
+  Voter get _currentVoter =>
+      _election.voters.firstWhere((v) => v.name == _username);
+  String get winnerName => _election?.winner?.name ?? "";
 
   Future init(AppView view) async {
     var config = await _context.services.config.loadConfig();
@@ -33,7 +37,11 @@ class AppController {
     goTo(Page.home);
   }
 
+  Idea _ideaWithName(String name) =>
+      _election.ideas.firstWhere((i) => i.name == name, orElse: () => null);
+
   void goTo(Page page) {
+    _currentPage = page;
     _view.renderPage(page);
   }
 
@@ -65,7 +73,46 @@ class AppController {
 
   Future setIdea(String idea) async {
     _election = await _service.submitIdea(_username, idea, _election.id);
-    goTo(Page.ideaSubmission);
+    goTo(Page.ballot);
+    _startTimer();
+  }
+
+  Future submitVote(String vote) async {
+    var voter = this._currentVoter;
+    var idea = this._ideaWithName(vote);
+    if (idea == null) {
+      return;
+    }
+    _election = await _service.vote(voter.name, idea.name, _election.id);
+    goTo(Page.waitingForVotes);
+  }
+
+  Future submitClose(String electionId) async {
+    _election = await _service.close(_election.id);
+    _timer.cancel();
+    goTo(Page.result);
+  }
+
+  Timer _timer;
+  void _startTimer() {
+    if (_timer != null) {
+      return;
+    }
+    var dur = new Duration(seconds: 3);
+    _timer = new Timer.periodic(dur, (_) => _handlePollUpdate());
+  }
+
+  _handlePollUpdate() async {
+    _election = await _service.get(_election.id);
+
+    // Re-render the current page
+    goTo(_currentPage);
+
+    if (_election.pollsOpen) {
+      return;
+    }
+
+    goTo(Page.result);
   }
 }
 
@@ -81,5 +128,6 @@ enum Page {
   username, // enter username
   ideaSubmission,
   ballot,
+  waitingForVotes,
   result,
 }

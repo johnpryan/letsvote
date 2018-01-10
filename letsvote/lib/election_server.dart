@@ -8,7 +8,7 @@ class ElectionServer {
 
   Election createElection(String topic) {
     var id = _getNextId();
-    var e = new Election(id, topic, [], []);
+    var e = new Election(id, topic, [], [], true);
     _elections[id] = e;
     return e;
   }
@@ -36,11 +36,39 @@ class ElectionServer {
     var election = getElection(electionId);
     var existing = election.ideas
         .firstWhere((i) => i.name == ideaName, orElse: () => null);
+
     if (existing != null) {
+      // todo: error handling
       return election;
     }
+
     var idea = new Idea(ideaName, authorName, 0);
     election.ideas.add(idea);
+    return election;
+  }
+
+  Election vote(String electionId, String authorName, String ideaName) {
+    var election = getElection(electionId);
+    var existing = election.ideas
+        .firstWhere((i) => i.name == ideaName, orElse: () => null);
+
+    if (existing == null) {
+      // todo: error handling
+      return election;
+    }
+
+    if (existing.authorName == authorName) {
+      return election;
+    }
+
+    existing.votes += 1;
+
+    return election;
+  }
+
+  Election close(String electionId) {
+    var election = getElection(electionId);
+    election.pollsOpen = false;
     return election;
   }
 

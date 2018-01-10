@@ -26,6 +26,10 @@ import 'package:polymer_elements/paper_spinner.dart';
 import 'package:polymer_elements/paper_input.dart';
 //ignore: unused_import
 import 'package:polymer_elements/paper_button.dart';
+//ignore: unused_import
+import 'package:polymer_elements/paper_radio_group.dart';
+//ignore: unused_import
+import 'package:polymer_elements/paper_radio_button.dart';
 
 @PolymerRegister(LvApp.tag)
 class LvApp extends PolymerElement implements AppView {
@@ -43,6 +47,11 @@ class LvApp extends PolymerElement implements AppView {
   String get enteredIdea => get('enteredIdea');
   String get enteredCode => get('enteredCode');
   void set topic(String topic) => set('topic', topic);
+  void set code(String code) => set('code', code);
+  void set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
+  String get selectedVoteIdea => get('selectedVoteIdea');
+  void set isCreator(bool b) => set('isCreator', b);
+  void set winner(String w) => set('winner', w);
 
   Future<Null> ready() async {
     var client = new BrowserClient();
@@ -86,9 +95,28 @@ class LvApp extends PolymerElement implements AppView {
     _controller.setIdea(enteredIdea);
   }
 
+  @reflectable
+  handleVoteEntered(e, d) {
+    var idea = this.selectedVoteIdea;
+    if (idea == null || idea.isEmpty) {
+      return;
+    }
+    _controller.submitVote(selectedVoteIdea);
+  }
+
+  @reflectable
+  closePolls(e, d) {
+    _controller.submitClose(_controller.election.id);
+  }
+
   void renderPage(Page state) {
     currentPageIndex = state.index;
     topic = _controller?.election?.topic;
+    code = _controller?.election?.id;
+    voteIdeas =
+        _controller?.election?.ideas?.map((i) => i.name)?.toList() ?? [];
+    isCreator = _controller?.isCreator;
+    winner = _controller?.winnerName;
   }
 
   void set controller(AppController controller) {

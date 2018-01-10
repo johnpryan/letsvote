@@ -14,18 +14,21 @@ Election _$ElectionFromJson(Map<String, dynamic> json) => new Election(
         ?.toList(),
     (json['ideas'] as List)
         ?.map((e) => e == null ? null : new Idea.fromJson(e))
-        ?.toList());
+        ?.toList(),
+    json['pollsOpen'] as bool);
 
 abstract class _$ElectionSerializerMixin {
   String get id;
   String get topic;
   List<Voter> get voters;
   List<Idea> get ideas;
+  bool get pollsOpen;
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'topic': topic,
         'voters': voters,
-        'ideas': ideas
+        'ideas': ideas,
+        'pollsOpen': pollsOpen
       };
 }
 
@@ -65,10 +68,10 @@ abstract class _$JoinElectionRequestSerializerMixin {
   Map<String, dynamic> toJson() => <String, dynamic>{'username': username};
 }
 
-SubmitIdeaRequest _$SubmitIdeaRequestFromJson(Map<String, dynamic> json) =>
-    new SubmitIdeaRequest(json['username'] as String, json['idea'] as String);
+IdeaRequest _$IdeaRequestFromJson(Map<String, dynamic> json) =>
+    new IdeaRequest(json['username'] as String, json['idea'] as String);
 
-abstract class _$SubmitIdeaRequestSerializerMixin {
+abstract class _$IdeaRequestSerializerMixin {
   String get username;
   String get idea;
   Map<String, dynamic> toJson() =>

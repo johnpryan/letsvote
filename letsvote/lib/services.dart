@@ -49,8 +49,21 @@ class ElectionService {
     return new Election.fromJson(JSON.decode(response.body));
   }
 
-  Future<Election> submitIdea(String username, String idea, String electionId) async {
+  Future<Election> submitIdea(
+      String username, String idea, String electionId) async {
     var request = new requests.SubmitIdea(host, username, idea, electionId);
+    var response = await requester.send(request);
+    return new Election.fromJson(JSON.decode(response.body));
+  }
+
+  Future<Election> vote(String username, String idea, String electionId) async {
+    var request = new requests.Vote(host, username, idea, electionId);
+    var response = await requester.send(request);
+    return new Election.fromJson(JSON.decode(response.body));
+  }
+
+  Future<Election> close(String electionId) async {
+    var request = new requests.Close(host, electionId);
     var response = await requester.send(request);
     return new Election.fromJson(JSON.decode(response.body));
   }

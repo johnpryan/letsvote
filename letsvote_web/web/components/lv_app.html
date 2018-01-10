@@ -27,7 +27,8 @@
                     <!-- Page.home -->
                     <h1>Let's Vote!</h1>
                     <p>Create a new vote or join an existing vote</p>
-                    <paper-button on-tap="handleStartCreate">Create</paper-button>
+                    <paper-button on-tap="handleStartCreate">Create
+                    </paper-button>
                     <paper-button on-tap="handleStartJoin">Join</paper-button>
                 </neon-animatable>
                 <neon-animatable>
@@ -48,6 +49,7 @@
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.username -->
+                    <p>code: [[code]]</p>
                     <p>Enter your name:</p>
                     <paper-input placeholder="John Doe"
                                  value="{{enteredUsername}}"></paper-input>
@@ -56,12 +58,39 @@
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.ideaSubmission -->
+                    <p>code: [[code]]</p>
                     <p>Topic: [[topic]]</p>
                     <p>Enter an idea:</p>
                     <paper-input placeholder="Idea"
                                  value="{{enteredIdea}}"></paper-input>
                     <paper-button on-tap="handleIdeaEntered">Submit
                     </paper-button>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- Page.ballot -->
+                    <p>code: [[code]]</p>
+                    <p>Topic: [[topic]]</p>
+                    <paper-radio-group selected="{{selectedVoteIdea}}">
+                        <template is="dom-repeat" items="[[voteIdeas]]" as="idea">
+                            <paper-radio-button name="[[idea]]">[[idea]]</paper-radio-button>
+                        </template>
+                    </paper-radio-group>
+                    <paper-button on-tap="handleVoteEntered">Vote</paper-button>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- Page.waitingForVotes -->
+                    <p>code: [[code]]</p>
+                    <p>Topic: [[topic]]</p>
+                    <template is="dom-if" if="[[isCreator]]">
+                        <paper-button on-tap="closePolls">Close Polls</paper-button>
+                    </template>
+                    <p>waiting for the polls to close...</p>
+                </neon-animatable>
+                <neon-animatable>
+                    <!-- Page.result -->
+                    <p>code: [[code]]</p>
+                    <p>Topic: [[topic]]</p>
+                    <p>Winner: [[winner]]</p>
                 </neon-animatable>
             </neon-animated-pages>
         </template>

@@ -41,10 +41,30 @@ class JoinElection extends JsonRequest {
 class SubmitIdea extends JsonRequest {
   SubmitIdea(Uri host, String username, String idea, String id)
       : super('POST', _createUri(host, id)) {
-    body = JSON.encode(new SubmitIdeaRequest(username, idea));
+    body = JSON.encode(new IdeaRequest(username, idea));
   }
 
   static Uri _createUri(Uri host, String id) {
     return host.replace(path: 'election/$id/idea');
+  }
+}
+
+class Vote extends JsonRequest {
+  Vote(Uri host, String username, String idea, String id)
+      : super('POST', _createUri(host, id)) {
+    body = JSON.encode(new IdeaRequest(username, idea));
+  }
+
+  static Uri _createUri(Uri host, String id) {
+    return host.replace(path: 'election/$id/vote');
+  }
+}
+
+class Close extends JsonRequest {
+  Close(Uri host, String id)
+      : super('PUT', _createUri(host, id));
+
+  static Uri _createUri(Uri host, String id) {
+    return host.replace(path: 'election/$id/close');
   }
 }

@@ -10,10 +10,19 @@ class Election extends _$ElectionSerializerMixin {
   final String topic;
   final List<Voter> voters;
   final List<Idea> ideas;
+  bool pollsOpen;
 
-  Election(this.id, this.topic, this.voters, this.ideas);
+  Election(this.id, this.topic, this.voters, this.ideas, this.pollsOpen);
 
   factory Election.fromJson(json) => _$ElectionFromJson(json);
+
+  Idea get winner {
+    var sorted = new List<Idea>.from(ideas)..sort((a, b) => a.votes - b.votes);
+    if (sorted.isEmpty) {
+      return null;
+    }
+    return sorted.first;
+  }
 }
 
 @JsonSerializable()
@@ -29,7 +38,7 @@ class Voter extends _$VoterSerializerMixin {
 class Idea extends _$IdeaSerializerMixin {
   final String name;
   final String authorName;
-  final int votes;
+  int votes;
 
   Idea(this.name, this.authorName, this.votes);
   factory Idea.fromJson(json) => _$IdeaFromJson(json);
@@ -55,14 +64,15 @@ class JoinElectionRequest extends _$JoinElectionRequestSerializerMixin {
       _$JoinElectionRequestFromJson(json);
 }
 
+/// Used for both voting and idea submission
 @JsonSerializable()
-class SubmitIdeaRequest extends _$SubmitIdeaRequestSerializerMixin {
+class IdeaRequest extends _$IdeaRequestSerializerMixin {
   final String username;
   final String idea;
 
-  SubmitIdeaRequest(this.username, this.idea);
+  IdeaRequest(this.username, this.idea);
 
-  factory SubmitIdeaRequest.fromJson(json) => _$SubmitIdeaRequestFromJson(json);
+  factory IdeaRequest.fromJson(json) => _$IdeaRequestFromJson(json);
 }
 
 @JsonSerializable()

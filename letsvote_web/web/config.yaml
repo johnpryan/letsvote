@@ -1,2 +1,2 @@
-host: https://letsvote-dart.herokuapp.com
-#host: http://localhost:9999
+#host: https://letsvote-dart.herokuapp.com
+host: http://localhost:9999
