@@ -105,6 +105,5 @@ class Server {
     } on ServiceException catch (e) {
       return new Response.internalServerError(body: e.msg);
     }
-
   }
 }

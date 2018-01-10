@@ -21,7 +21,7 @@ class Election extends _$ElectionSerializerMixin {
     if (sorted.isEmpty) {
       return null;
     }
-    return sorted.first;
+    return sorted.reversed.first;
   }
 }
 
