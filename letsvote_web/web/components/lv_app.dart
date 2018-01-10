@@ -50,8 +50,10 @@ class LvApp extends PolymerElement implements AppView {
   void set code(String code) => set('code', code);
   void set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
   String get selectedVoteIdea => get('selectedVoteIdea');
-  void set isCreator(bool b) => set('isCreator', b);
-  void set winner(String w) => set('winner', w);
+  void set isCreator(bool v) => set('isCreator', v);
+  void set winner(String v) => set('winner', v);
+  void set winnerAuthor(String v) => set('winnerAuthor', v);
+  void set winnerVotes(int v) => set('winnerVotes',v);
 
   Future<Null> ready() async {
     var client = new BrowserClient();
@@ -117,6 +119,8 @@ class LvApp extends PolymerElement implements AppView {
         _controller?.election?.ideas?.map((i) => i.name)?.toList() ?? [];
     isCreator = _controller?.isCreator;
     winner = _controller?.winnerName;
+    winnerAuthor = _controller?.winnerAuthor;
+    winnerVotes = _controller?.winnerVotes;
   }
 
   void set controller(AppController controller) {

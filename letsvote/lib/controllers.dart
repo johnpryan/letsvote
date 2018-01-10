@@ -27,6 +27,8 @@ class AppController {
   Voter get _currentVoter =>
       _election.voters.firstWhere((v) => v.name == _username);
   String get winnerName => _election?.winner?.name ?? "";
+  int get winnerVotes => _election?.winner?.votes ?? 0;
+  String get winnerAuthor => _election?.winner?.authorName ?? "";
 
   Future init(AppView view) async {
     var config = await _context.services.config.loadConfig();

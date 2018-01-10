@@ -57,10 +57,6 @@ class ElectionServer {
       return election;
     }
 
-    if (existing.authorName == authorName) {
-      return election;
-    }
-
     existing.votes += 1;
 
     return election;
