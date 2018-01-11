@@ -54,6 +54,9 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
       case Page.waitingForVotes:
         return new WaitingForVotesPage(_controller);
       case Page.result:
+        return new ResultsPage(_controller);
+      default:
+        return new HomePage(_controller);
     }
   }
 
@@ -125,7 +128,7 @@ class JoiningPage extends StatefulWidget {
   }
 }
 
-class _JoiningPageState extends State<CreatePage> {
+class _JoiningPageState extends State<JoiningPage> {
   TextEditingController textController;
   _JoiningPageState() : textController = new TextEditingController();
 
@@ -155,7 +158,7 @@ class UsernamePage extends StatefulWidget {
   }
 }
 
-class _UsernamePageState extends State<CreatePage> {
+class _UsernamePageState extends State<UsernamePage> {
   TextEditingController textController;
 
   _UsernamePageState() : textController = new TextEditingController();
@@ -186,7 +189,7 @@ class IdeaSubmissionPage extends StatefulWidget {
   }
 }
 
-class _IdeaSubmissionPageState extends State<CreatePage> {
+class _IdeaSubmissionPageState extends State<IdeaSubmissionPage> {
   TextEditingController textController;
   _IdeaSubmissionPageState() : textController = new TextEditingController();
 
@@ -216,26 +219,50 @@ class BallotPage extends StatefulWidget {
   }
 }
 
-class _BallotPage extends State<CreatePage> {
-  TextEditingController textController;
-  _BallotPage() : textController = new TextEditingController();
+class _BallotPage extends State<BallotPage> {
+  String _selectedIdeaName;
+  _BallotPage();
 
   Election get election => widget._controller.election;
 
   Widget build(BuildContext context) {
+    var children = <Widget>[
+      new Text("code: ${election.id}"),
+      new Text("Topic: ${election.topic}"),
+      new Text("You don't have to vote yet! More options may appear."),
+    ];
+
+    var radios = election.ideas.map((i) {
+      return new RadioListTile(
+        title: new Text(i.name),
+        value: i.name,
+        groupValue: _selectedIdeaName,
+        onChanged: _handleRadioChanged,
+      );
+    }).toList();
+    children.addAll(radios);
+
+    children.add(
+      new MaterialButton(
+        child: new Text("Vote"),
+        onPressed: _selectedIdeaName == null ? null : _handleVote,
+      ),
+    );
+
     return new Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        new Text("code: ${election.id}"),
-        new Text("Topic: ${election.topic}"),
-        new TextField(controller: textController),
-        new MaterialButton(
-          child: new Text("Submit"),
-          onPressed: () => widget._controller.submitVote(textController.text),
-        ),
-        new Text("You don't have to vote yet! More options may appear."),
-      ],
+      children: children,
     );
+  }
+
+  void _handleRadioChanged(String name) {
+    setState(() {
+      _selectedIdeaName = name;
+    });
+  }
+
+  void _handleVote() {
+    widget._controller.submitVote(_selectedIdeaName);
   }
 }
 
@@ -247,21 +274,55 @@ class WaitingForVotesPage extends StatefulWidget {
   }
 }
 
-class _WaitingForVotesPageState extends State<CreatePage> {
-  TextEditingController textController;
-  _WaitingForVotesPageState() : textController = new TextEditingController();
+class _WaitingForVotesPageState extends State<WaitingForVotesPage> {
+  _WaitingForVotesPageState();
 
   Election get election => widget._controller.election;
 
   Widget build(BuildContext context) {
     var children = <Widget>[
-        new Text("code: ${election.id}"),
-        new Text("Topic: ${election.topic}"),
-      ];
+      new Text("code: ${election.id}"),
+      new Text("Topic: ${election.topic}"),
+      new Text("waiting for the polls to close..."),
+    ];
 
     if (widget._controller.isCreator) {
-      children.add(new MaterialButton(onPressed: null))
+      children.add(
+        new MaterialButton(
+          onPressed: () => widget._controller.submitClose(election.id),
+          child: new Text("Close Polls"),
+        ),
+      );
     }
+
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children,
+    );
+  }
+}
+
+class ResultsPage extends StatefulWidget {
+  final AppController _controller;
+  ResultsPage(this._controller);
+  State<StatefulWidget> createState() {
+    return new _ResultsPageState();
+  }
+}
+
+class _ResultsPageState extends State<ResultsPage> {
+  _ResultsPageState();
+
+  Election get election => widget._controller.election;
+
+  Widget build(BuildContext context) {
+    var children = <Widget>[
+      new Text("code: ${election.id}"),
+      new Text("Topic: ${election.topic}"),
+      new Text("Winner: ${election.winner.name}"),
+      new Text("Author: ${election.winner.authorName}"),
+      new Text("Votes: ${election.winner.votes}"),
+    ];
 
     return new Column(
       mainAxisAlignment: MainAxisAlignment.center,

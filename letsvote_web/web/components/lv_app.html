@@ -66,6 +66,7 @@
                     <!-- Page.ballot -->
                     <p>code: [[code]]</p>
                     <p>Topic: [[topic]]</p>
+                    <p>You don't have to vote yet! More options may appear.</p>
                     <paper-radio-group selected="{{selectedVoteIdea}}">
                         <template is="dom-repeat" items="[[voteIdeas]]"
                                   as="idea">
@@ -74,7 +75,6 @@
                         </template>
                     </paper-radio-group>
                     <paper-button on-tap="handleVoteEntered">Vote</paper-button>
-                    <p>You don't have to vote yet! More options may appear.</p>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.waitingForVotes -->

@@ -50,7 +50,7 @@ class LvApp extends PolymerElement implements AppView {
   void set code(String code) => set('code', code);
   void set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
   String get selectedVoteIdea => get('selectedVoteIdea');
-  void set isCreator(bool b) => set('isCreator', v);
+  void set isCreator(bool b) => set('isCreator', b);
   void set winner(String v) => set('winner', v);
   void set winnerAuthor(String v) => set('winnerAuthor', v);
   void set winnerVotes(int v) => set('winnerVotes',v);
