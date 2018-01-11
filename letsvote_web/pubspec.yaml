@@ -1,5 +1,7 @@
 name: letsvote_web
-description: An absolute bare-bones web app.
+description: >
+  demonstrates how code can be shared across web, mobile, and the
+  server.
 version: 0.0.1
 
 environment:
@@ -10,7 +12,7 @@ dependencies:
   shelf: ^0.6.0
   shelf_static: ^0.2.7
   shelf_route: ^0.14.3
-  shelf_cors: any
+  shelf_cors: ^0.2.1
   letsvote:
     path: ../letsvote
   polymer: ^1.0.0-rc.17

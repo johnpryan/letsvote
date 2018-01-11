@@ -8,7 +8,7 @@ import 'package:shelf_static/shelf_static.dart' as shelf_static;
 import 'package:shelf_route/shelf_route.dart' as shelf_route;
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_cors/shelf_cors.dart' as shelf_cors;
-import 'package:letsvote/server.dart' as letsvote;
+import 'package:letsvote_web/server.dart' as letsvote;
 
 void main(List<String> args) {
   // Get the path to this app's static HTML and other generated files. Assumes

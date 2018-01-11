@@ -8,8 +8,6 @@ environment:
   sdk: '>=1.20.1 <2.0.0'
 
 dependencies:
-  shelf_route: ^0.14.3
-  route: ^0.4.6
   source_gen: ^0.7.2
   json_serializable: ^0.2.5
   json_annotation: ^0.2.1

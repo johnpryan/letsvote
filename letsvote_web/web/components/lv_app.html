@@ -74,16 +74,17 @@
                         </template>
                     </paper-radio-group>
                     <paper-button on-tap="handleVoteEntered">Vote</paper-button>
+                    <p>You don't have to vote yet! More options may appear.</p>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.waitingForVotes -->
                     <p>code: [[code]]</p>
                     <p>Topic: [[topic]]</p>
+                    <p>waiting for the polls to close...</p>
                     <template is="dom-if" if="[[isCreator]]">
                         <paper-button on-tap="closePolls">Close Polls
                         </paper-button>
                     </template>
-                    <p>waiting for the polls to close...</p>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.result -->
