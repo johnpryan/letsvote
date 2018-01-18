@@ -128,8 +128,8 @@ enum Page {
   create, // enter topic
   joining, // enter id (skipped if using create)
   username, // enter username
-  ideaSubmission,
-  ballot,
-  waitingForVotes,
-  result,
+  ideaSubmission, // enter an candidate
+  ballot, // display each candidate (idea) and pick one
+  waitingForVotes, // wait for the polls to close
+  result, // show the winner
 }
