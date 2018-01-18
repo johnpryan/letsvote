@@ -205,7 +205,6 @@ class Idea extends _$IdeaSerializerMixin {
 The API for our server is a REST api built using shelf:
 
 ```dart
-// letsvote/lib/election_server.dart
 void configureRoutes(Router router) {
   router.post("/election", handleCreate);
   router.get("/election/{id}", handleGet);
@@ -328,7 +327,7 @@ We've found that following these three rules allows us to share the most code
 between mobile and web:
 
 1. Use a layered architecture
-2. Remove logic from views.
+2. Remove logic from views
 3. Inject dependencies
 
 But don't overdo it. Refactoring is fun (code golf at work!), but can be a time

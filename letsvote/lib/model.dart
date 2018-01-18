@@ -17,11 +17,13 @@ class Election extends _$ElectionSerializerMixin {
   factory Election.fromJson(json) => _$ElectionFromJson(json);
 
   Idea get winner {
-    var sorted = new List<Idea>.from(ideas)..sort((a, b) => a.votes - b.votes);
-    if (sorted.isEmpty) {
+    if (ideas.isEmpty) {
       return null;
     }
-    return sorted.reversed.first;
+
+    var sorted = new List<Idea>.from(ideas);
+    sorted.sort((a, b) => b.votes - a.votes);
+    return sorted.first;
   }
 }
 
