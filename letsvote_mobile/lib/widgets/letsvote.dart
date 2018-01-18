@@ -31,8 +31,20 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
       appBar: new AppBar(
         title: new Text("Let's Vote!"),
       ),
-      body: new Center(
-        child: _currentPageWidget(),
+      body: new Container(
+        color: Colors.grey[100],
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            new Card(
+              child: new Padding(
+                padding: new EdgeInsets.all(12.0),
+                child: _currentPageWidget(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -69,22 +81,29 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
       _page = page;
     });
   }
+
+  void showDialog(String message) {
+    // TODO: implement showDialog
+  }
 }
 
 class HomePage extends StatelessWidget {
   final AppController _controller;
   HomePage(this._controller);
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: <Widget>[
         new Text("Let's Vote!"),
         new Text("Create a new vote or join an existing vote"),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Create"),
           onPressed: () => _controller.startByCreating(),
         ),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Join"),
           onPressed: () => _controller.startByJoining(),
         ),
@@ -106,12 +125,13 @@ class _CreatePageState extends State<CreatePage> {
   _CreatePageState() : textController = new TextEditingController();
 
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: <Widget>[
         new Text("Create a new vote:"),
         new TextField(controller: textController),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Submit"),
           onPressed: () => widget._controller.create(textController.text),
         ),
@@ -133,8 +153,7 @@ class _JoiningPageState extends State<JoiningPage> {
   _JoiningPageState() : textController = new TextEditingController();
 
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: <Widget>[
         new Text("Enter the code for your vote:"),
         new TextField(
@@ -142,6 +161,8 @@ class _JoiningPageState extends State<JoiningPage> {
           maxLength: 4,
         ),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Submit"),
           onPressed: () => widget._controller.goTo(Page.username),
         ),
@@ -166,13 +187,14 @@ class _UsernamePageState extends State<UsernamePage> {
   Election get election => widget._controller.election;
 
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: <Widget>[
         new Text("code: ${election.id}"),
         new Text("Enter your name:"),
         new TextField(controller: textController),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Submit"),
           onPressed: () => widget._controller.setName(textController.text),
         ),
@@ -196,13 +218,16 @@ class _IdeaSubmissionPageState extends State<IdeaSubmissionPage> {
   Election get election => widget._controller.election;
 
   Widget build(BuildContext context) {
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
+      padding: new EdgeInsets.all(8.0),
       children: <Widget>[
+        new Text("Enter an Idea"),
         new Text("code: ${election.id}"),
         new Text("Topic: ${election.topic}"),
         new TextField(controller: textController),
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           child: new Text("Submit"),
           onPressed: () => widget._controller.setIdea(textController.text),
         ),
@@ -244,13 +269,14 @@ class _BallotPage extends State<BallotPage> {
 
     children.add(
       new MaterialButton(
+        color: Colors.blueGrey,
+        textColor: Colors.white,
         child: new Text("Vote"),
         onPressed: _selectedIdeaName == null ? null : _handleVote,
       ),
     );
 
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: children,
     );
   }
@@ -289,14 +315,15 @@ class _WaitingForVotesPageState extends State<WaitingForVotesPage> {
     if (widget._controller.isCreator) {
       children.add(
         new MaterialButton(
+          color: Colors.blueGrey,
+          textColor: Colors.white,
           onPressed: () => widget._controller.submitClose(election.id),
           child: new Text("Close Polls"),
         ),
       );
     }
 
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: children,
     );
   }
@@ -324,9 +351,27 @@ class _ResultsPageState extends State<ResultsPage> {
       new Text("Votes: ${election.winner.votes}"),
     ];
 
-    return new Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return new PaddedColumn(
       children: children,
+    );
+  }
+}
+
+class PaddedColumn extends StatelessWidget {
+  final EdgeInsetsGeometry padding;
+  final List<Widget> children;
+  PaddedColumn({this.padding = const EdgeInsets.all(8.0), this.children});
+
+  Widget build(BuildContext context) {
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: this
+          .children
+          .map((c) => new Padding(
+                padding: this.padding,
+                child: c,
+              ))
+          .toList(),
     );
   }
 }

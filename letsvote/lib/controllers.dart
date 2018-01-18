@@ -68,9 +68,13 @@ class AppController {
   }
 
   Future setName(String name) async {
-    _election = await _service.join(name, _election.id);
-    _username = name;
-    goTo(Page.ideaSubmission);
+    try {
+      _election = await _service.join(name, _election.id);
+      _username = name;
+      goTo(Page.ideaSubmission);
+    } catch(e) {
+      _view.showDialog("That name is already taken");
+    }
   }
 
   Future setIdea(String idea) async {
@@ -121,6 +125,7 @@ class AppController {
 abstract class AppView {
   void renderPage(Page state);
   void set controller(AppController controller);
+  void showDialog(String message);
 }
 
 enum Page {
@@ -128,8 +133,8 @@ enum Page {
   create, // enter topic
   joining, // enter id (skipped if using create)
   username, // enter username
-  ideaSubmission,
-  ballot,
-  waitingForVotes,
-  result,
+  ideaSubmission, // enter an candidate
+  ballot, // display each candidate (idea) and pick one
+  waitingForVotes, // wait for the polls to close
+  result, // show the winner
 }
