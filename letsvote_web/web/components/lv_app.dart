@@ -11,23 +11,41 @@ import 'package:http/browser_client.dart';
 import 'package:letsvote/controllers.dart';
 
 //ignore: unused_import
+import 'package:polymer_elements/paper_styles.dart';
+
+//ignore: unused_import
+import 'package:polymer_elements/paper_toolbar.dart';
+
+//ignore: unused_import
+import 'package:polymer_elements/paper_dialog.dart';
+
+//ignore: unused_import
 import 'package:polymer_elements/paper_card.dart';
+
 //ignore: unused_import
 import 'package:polymer_elements/neon_animated_pages.dart';
+
 // ignore: unused_import
 import 'package:polymer_elements/neon_animatable.dart';
+
 // ignore: unused_import
 import 'package:polymer_elements/neon_animation.dart';
+
 // ignore: unused_import
 import 'package:polymer_elements/iron_flex_layout.dart';
+
 // ignore: unused_import
-import 'package:polymer_elements/paper_spinner.dart';
+import 'package:polymer_elements/paper_progress.dart';
+
 //ignore: unused_import
 import 'package:polymer_elements/paper_input.dart';
+
 //ignore: unused_import
 import 'package:polymer_elements/paper_button.dart';
+
 //ignore: unused_import
 import 'package:polymer_elements/paper_radio_group.dart';
+
 //ignore: unused_import
 import 'package:polymer_elements/paper_radio_button.dart';
 
@@ -38,22 +56,34 @@ class LvApp extends PolymerElement implements AppView {
   AppController _controller;
 
   void set currentPageIndex(int i) => set('currentPageIndex', i);
+
   void set isLoading(bool l) => set('isLoading', l);
 
   LvApp.created() : super.created();
 
   String get createTopic => get('createTopic');
+
   String get enteredUsername => get('enteredUsername');
+
   String get enteredIdea => get('enteredIdea');
+
   String get enteredCode => get('enteredCode');
+
   void set topic(String topic) => set('topic', topic);
+
   void set code(String code) => set('code', code);
+
   void set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
+
   String get selectedVoteIdea => get('selectedVoteIdea');
+
   void set isCreator(bool b) => set('isCreator', b);
+
   void set winner(String v) => set('winner', v);
+
   void set winnerAuthor(String v) => set('winnerAuthor', v);
-  void set winnerVotes(int v) => set('winnerVotes',v);
+
+  void set winnerVotes(int v) => set('winnerVotes', v);
 
   Future<Null> ready() async {
     var client = new BrowserClient();
@@ -73,7 +103,9 @@ class LvApp extends PolymerElement implements AppView {
 
   @reflectable
   handleCreate(e, d) async {
-    _controller.create(createTopic);
+    isLoading = true;
+    await _controller.create(createTopic);
+    isLoading = false;
   }
 
   @reflectable
@@ -88,22 +120,28 @@ class LvApp extends PolymerElement implements AppView {
   }
 
   @reflectable
-  handleNameEntered(e, d) {
-    _controller.setName(enteredUsername);
+  handleNameEntered(e, d) async {
+    isLoading = true;
+    await _controller.setName(enteredUsername);
+    isLoading = false;
   }
 
   @reflectable
-  handleIdeaEntered(e, d) {
-    _controller.setIdea(enteredIdea);
+  handleIdeaEntered(e, d) async {
+    isLoading = true;
+    await _controller.setIdea(enteredIdea);
+    isLoading = false;
   }
 
   @reflectable
-  handleVoteEntered(e, d) {
+  handleVoteEntered(e, d) async {
     var idea = this.selectedVoteIdea;
     if (idea == null || idea.isEmpty) {
       return;
     }
-    _controller.submitVote(selectedVoteIdea);
+    isLoading = true;
+    await _controller.submitVote(selectedVoteIdea);
+    isLoading = false;
   }
 
   @reflectable
@@ -125,5 +163,10 @@ class LvApp extends PolymerElement implements AppView {
 
   void set controller(AppController controller) {
     _controller = controller;
+  }
+
+  void showDialog(String message) {
+    set('dialogMessage', message);
+    ($$('#dialog') as PaperDialog).open();
   }
 }

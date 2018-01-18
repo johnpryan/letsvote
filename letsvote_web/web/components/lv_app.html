@@ -3,98 +3,193 @@
         :host {
             @apply(--layout-vertical);
             @apply(--layout-fit);
+
+            --primary-color: var(--paper-blue-grey-500);
+            --secondary-color: var(--paper-blue-grey-500);
+            --accent-color: var(--paper-blue-300);
+            --paper-progress-active-color: var(--paper-blue-300);
         }
 
         neon-animated-pages {
             @apply(--layout-flex);
             @apply(--layout-vertical);
         }
+
+        neon-animated-pages > * {
+            @apply(--layout-flex);
+            @apply(--layout-vertical);
+        }
+
+        .card-container {
+            @apply(--layout-flex);
+            @apply(--layout-relative);
+            @apply(--layout-center-justified);
+            @apply(--layout-scroll);
+            background-color: var(--paper-grey-100);
+        }
+
+        .card {
+            margin: 6px auto 6px auto;
+            width: 100%;
+            max-width: 600px;
+            --paper-card-header-image: {
+                padding: 16px;
+                width: 80%;
+            };
+        }
+
+        paper-radio-group {
+            display: block;
+        }
+
+        paper-radio-button {
+            display: block;
+        }
+
+        paper-button {
+            background-color: var(--paper-blue-grey-500);
+            color: white;
+        }
+
     </style>
     <template>
-        <template is="dom-if" if="[[isLoading]]">
-            <paper-spinner active></paper-spinner>
-        </template>
-        <template is="dom-if" if="[[!isLoading]]">
+        <paper-toolbar>
+            <span slot="top" class="title">Let's Vote</span>
+            <template is="dom-if" if="[[isLoading]]">
+                <paper-progress slot="middle" class="fit"
+                                indeterminate></paper-progress>
+            </template>
+        </paper-toolbar>
+        <div class="card-container">
             <neon-animated-pages selected="[[currentPageIndex]]"
                                  entry-animation="slide-from-right-animation"
                                  exit-animation="slide-left-animation">
                 <neon-animatable>
-                    <!-- Page.home -->
-                    <h1>Let's Vote!</h1>
-                    <p>Create a new vote or join an existing vote</p>
-                    <paper-button on-tap="handleStartCreate">Create
-                    </paper-button>
-                    <paper-button on-tap="handleStartJoin">Join</paper-button>
+                    <paper-card class="card" image="/letsvote-logo.png"
+                                alt="Let's Vote">
+                        <!-- Page.home -->
+                        <div class="card-content">
+                            <p>Create a new vote or join an existing
+                                vote</p>
+                            <paper-button raised on-tap="handleStartCreate"
+                                          disabled="[[isLoading]]">Create
+                            </paper-button>
+                            <paper-button raised on-tap="handleStartJoin"
+                                          disabled="[[isLoading]]">Join
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.create -->
-                    <p>Create a new vote:</p>
-                    <paper-input placeholder="Enter a topic"
-                                 value="{{createTopic}}"></paper-input>
-                    <paper-button on-tap="handleCreate">Submit
-                    </paper-button>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>Create a new vote:</p>
+                            <paper-input placeholder="Enter a topic"
+                                         value="{{createTopic}}"></paper-input>
+                            <paper-button raised on-tap="handleCreate"
+                                          disabled="[[isLoading]]">Submit
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.joining -->
-                    <p>Enter the code for your vote:</p>
-                    <paper-input placeholder="4-letter code"
-                                 value="{{enteredCode}}"
-                                 maxlength="4"></paper-input>
-                    <paper-button on-tap="handleJoin">Submit
-                    </paper-button>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>Enter the code for your vote:</p>
+                            <paper-input placeholder="4-letter code"
+                                         value="{{enteredCode}}"
+                                         maxlength="4"></paper-input>
+                            <paper-button raised on-tap="handleJoin"
+                                          disabled="[[isLoading]]">Submit
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.username -->
-                    <p>code: [[code]]</p>
-                    <p>Enter your name:</p>
-                    <paper-input placeholder="John Doe"
-                                 value="{{enteredUsername}}"></paper-input>
-                    <paper-button on-tap="handleNameEntered">Submit
-                    </paper-button>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>code: [[code]]</p>
+                            <p>Enter your name:</p>
+                            <paper-input placeholder="John Doe"
+                                         value="{{enteredUsername}}"></paper-input>
+                            <paper-button raised on-tap="handleNameEntered"
+                                          disabled="[[isLoading]]">Submit
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.ideaSubmission -->
-                    <p>code: [[code]]</p>
-                    <p>Topic: [[topic]]</p>
-                    <p>Enter an idea:</p>
-                    <paper-input placeholder="Idea"
-                                 value="{{enteredIdea}}"></paper-input>
-                    <paper-button on-tap="handleIdeaEntered">Submit
-                    </paper-button>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>code: [[code]]</p>
+                            <p>Topic: [[topic]]</p>
+                            <p>Enter an idea:</p>
+                            <paper-input placeholder="Idea"
+                                         value="{{enteredIdea}}"></paper-input>
+                            <paper-button raised on-tap="handleIdeaEntered"
+                                          disabled="[[isLoading]]">Submit
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.ballot -->
-                    <p>code: [[code]]</p>
-                    <p>Topic: [[topic]]</p>
-                    <p>You don't have to vote yet! More options may appear.</p>
-                    <paper-radio-group selected="{{selectedVoteIdea}}">
-                        <template is="dom-repeat" items="[[voteIdeas]]"
-                                  as="idea">
-                            <paper-radio-button name="[[idea]]">[[idea]]
-                            </paper-radio-button>
-                        </template>
-                    </paper-radio-group>
-                    <paper-button on-tap="handleVoteEntered">Vote</paper-button>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>code: [[code]]</p>
+                            <p>Topic: [[topic]]</p>
+                            <p>You don't have to vote yet! More options may
+                                appear.</p>
+                            <paper-radio-group selected="{{selectedVoteIdea}}">
+                                <template is="dom-repeat" items="[[voteIdeas]]"
+                                          as="idea">
+                                    <paper-radio-button name="[[idea]]">[[idea]]
+                                    </paper-radio-button>
+                                </template>
+                            </paper-radio-group>
+                            <paper-button raised on-tap="handleVoteEntered"
+                                          disabled="[[isLoading]]">Vote
+                            </paper-button>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.waitingForVotes -->
-                    <p>code: [[code]]</p>
-                    <p>Topic: [[topic]]</p>
-                    <p>waiting for the polls to close...</p>
-                    <template is="dom-if" if="[[isCreator]]">
-                        <paper-button on-tap="closePolls">Close Polls
-                        </paper-button>
-                    </template>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>code: [[code]]</p>
+                            <p>Topic: [[topic]]</p>
+                            <p>waiting for the polls to close...</p>
+                            <template is="dom-if" if="[[isCreator]]">
+                                <paper-button raised on-tap="closePolls"
+                                              disabled="[[isLoading]]">Close
+                                    Polls
+                                </paper-button>
+                            </template>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
                 <neon-animatable>
                     <!-- Page.result -->
-                    <p>code: [[code]]</p>
-                    <p>Topic: [[topic]]</p>
-                    <p>Winner: [[winner]]</p>
-                    <p>Author: [[winnerAuthor]]</p>
-                    <p>Votes: [[winnerVotes]]</p>
+                    <paper-card class="card">
+                        <div class="card-content">
+                            <p>code: [[code]]</p>
+                            <p>Topic: [[topic]]</p>
+                            <p>Winner: [[winner]]</p>
+                            <p>Author: [[winnerAuthor]]</p>
+                            <p>Votes: [[winnerVotes]]</p>
+                        </div>
+                    </paper-card>
                 </neon-animatable>
             </neon-animated-pages>
-        </template>
+        </div>
+        <paper-dialog id="dialog" modal>
+            <p>[[dialogMessage]]</p>
+            <paper-button dialog-dismiss>Ok</paper-button>
+        </paper-dialog>
     </template>
 </dom-module>
