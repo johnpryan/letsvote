@@ -6,8 +6,8 @@
 
             --primary-color: var(--paper-blue-grey-500);
             --secondary-color: var(--paper-blue-grey-500);
-            --accent-color: var(--paper-blue-300);
-            --paper-progress-active-color: var(--paper-blue-300);
+            --accent-color: var(--paper-blue-grey-500);
+            --paper-progress-active-color: var(--paper-blue-grey-500);
         }
 
         neon-animated-pages {
@@ -59,11 +59,14 @@
                 <paper-progress slot="middle" class="fit"
                                 indeterminate></paper-progress>
             </template>
+            <template is="dom-if" if="[[canStartOver]]">
+                <paper-button slot="top" on-tap="handleStartOver">Start Over</paper-button>
+            </template>
         </paper-toolbar>
         <div class="card-container">
             <neon-animated-pages selected="[[currentPageIndex]]"
-                                 entry-animation="slide-from-right-animation"
-                                 exit-animation="slide-left-animation">
+                                 entry-animation="[[entryAnimation]]"
+                                 exit-animation="[[exitAnimation]]">
                 <neon-animatable>
                     <paper-card class="card" image="/letsvote-logo.png"
                                 alt="Let's Vote">

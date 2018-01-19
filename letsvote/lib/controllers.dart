@@ -31,12 +31,14 @@ class AppController {
   String get winnerAuthor => _election?.winner?.authorName ?? "";
 
   Future init(AppView view) async {
+    view.isLoading = true;
     var config = await _context.services.config.loadConfig();
     var uri = Uri.parse(config.host);
     _context.services.election = new ElectionService(_context.requester, uri);
     _view = view;
     _view.controller = this;
     goTo(Page.home);
+    view.isLoading = false;
   }
 
   Idea _ideaWithName(String name) =>
@@ -56,34 +58,52 @@ class AppController {
   }
 
   Future create(String topic) async {
+    _view.isLoading = true;
+
     _election = await _service.create(topic);
     goTo(Page.username);
     isCreator = true;
+
+    _view.isLoading = false;
   }
 
   Future join(String code) async {
+    _view.isLoading = true;
+
     _election = await _service.get(code);
     goTo(Page.username);
     isCreator = false;
+
+    _view.isLoading = false;
   }
 
   Future setName(String name) async {
+    _view.isLoading = true;
+
     try {
       _election = await _service.join(name, _election.id);
       _username = name;
       goTo(Page.ideaSubmission);
-    } catch(e) {
-      _view.showDialog("That name is already taken");
+    } catch (e) {
+      _view.showError("That name is already taken");
+    } finally {
+      _view.isLoading = false;
     }
   }
 
   Future setIdea(String idea) async {
+    _view.isLoading = true;
+
     _election = await _service.submitIdea(_username, idea, _election.id);
     goTo(Page.ballot);
     _startTimer();
+
+    _view.isLoading = false;
   }
 
   Future submitVote(String vote) async {
+    _view.isLoading = true;
+
     var voter = this._currentVoter;
     var idea = this._ideaWithName(vote);
     if (idea == null) {
@@ -91,12 +111,29 @@ class AppController {
     }
     _election = await _service.vote(voter.name, idea.name, _election.id);
     goTo(Page.waitingForVotes);
+
+    _view.isLoading = false;
   }
 
   Future submitClose(String electionId) async {
+    _view.isLoading = true;
+
     _election = await _service.close(_election.id);
     _timer.cancel();
     goTo(Page.result);
+
+    _view.isLoading = false;
+  }
+
+  bool get canStartOver {
+    return this._currentPage != Page.home;
+  }
+
+  void startOver() {
+    _election = null;
+    _username = "";
+    isCreator = false;
+    goTo(Page.home);
   }
 
   Timer _timer;
@@ -125,7 +162,8 @@ class AppController {
 abstract class AppView {
   void renderPage(Page state);
   void set controller(AppController controller);
-  void showDialog(String message);
+  void showError(String message);
+  void set isLoading(bool loading);
 }
 
 enum Page {

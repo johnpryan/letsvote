@@ -85,15 +85,19 @@ class LvApp extends PolymerElement implements AppView {
 
   void set winnerVotes(int v) => set('winnerVotes', v);
 
+  void set canStartOver(bool v) => set('canStartOver', v);
+
+  void set entryAnimation(String v) => set('entryAnimation', v);
+
+  void set exitAnimation(String v) => set('exitAnimation', v);
+
   Future<Null> ready() async {
     var client = new BrowserClient();
     var services = new AppServices(new BrowserConfigService(client));
     var appContext = new AppContext(client, services);
     var controller = new AppController(appContext);
 
-    isLoading = true;
     await controller.init(this);
-    isLoading = false;
   }
 
   @reflectable
@@ -103,14 +107,12 @@ class LvApp extends PolymerElement implements AppView {
 
   @reflectable
   handleCreate(e, d) async {
-    isLoading = true;
     await _controller.create(createTopic);
-    isLoading = false;
   }
 
   @reflectable
   handleJoin(e, d) async {
-    _controller.join(enteredCode);
+    await _controller.join(enteredCode);
     _controller.goTo(Page.username);
   }
 
@@ -121,16 +123,12 @@ class LvApp extends PolymerElement implements AppView {
 
   @reflectable
   handleNameEntered(e, d) async {
-    isLoading = true;
     await _controller.setName(enteredUsername);
-    isLoading = false;
   }
 
   @reflectable
   handleIdeaEntered(e, d) async {
-    isLoading = true;
     await _controller.setIdea(enteredIdea);
-    isLoading = false;
   }
 
   @reflectable
@@ -139,9 +137,7 @@ class LvApp extends PolymerElement implements AppView {
     if (idea == null || idea.isEmpty) {
       return;
     }
-    isLoading = true;
     await _controller.submitVote(selectedVoteIdea);
-    isLoading = false;
   }
 
   @reflectable
@@ -149,8 +145,15 @@ class LvApp extends PolymerElement implements AppView {
     _controller.submitClose(_controller.election.id);
   }
 
-  void renderPage(Page state) {
-    currentPageIndex = state.index;
+  @reflectable
+  handleStartOver(e, d) {
+    _controller.startOver();
+  }
+
+  void renderPage(Page page) {
+    _setAnimations(page);
+
+    currentPageIndex = page.index;
     topic = _controller?.election?.topic;
     code = _controller?.election?.id;
     voteIdeas =
@@ -159,14 +162,27 @@ class LvApp extends PolymerElement implements AppView {
     winner = _controller?.winnerName;
     winnerAuthor = _controller?.winnerAuthor;
     winnerVotes = _controller?.winnerVotes;
+    canStartOver = _controller?.canStartOver ?? false;
   }
 
   void set controller(AppController controller) {
     _controller = controller;
   }
 
-  void showDialog(String message) {
+  void showError(String message) {
     set('dialogMessage', message);
     ($$('#dialog') as PaperDialog).open();
+  }
+
+  Page _lastPage;
+  void _setAnimations(Page newPage) {
+    if (_lastPage != null && _lastPage.index < newPage.index) {
+      entryAnimation = "slide-from-right-animation";
+      exitAnimation = "slide-left-animation";
+    } else {
+      entryAnimation = "slide-from-left-animation";
+      exitAnimation = "slide-right-animation";
+    }
+    _lastPage = newPage;
   }
 }

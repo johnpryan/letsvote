@@ -12,8 +12,10 @@ class LetsVote extends StatefulWidget {
 class _LetsVoteState extends State<LetsVote> implements AppView {
   AppController _controller;
   Page _page;
+  bool _isLoading;
 
   void initState() {
+    _isLoading = false;
     super.initState();
     var client = new Client();
     var services = new AppServices(new FlutterConfigService(client));
@@ -26,24 +28,43 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
     if (_page == null) {
       return new CircularProgressIndicator();
     }
+    var children = [];
+
+    if (_isLoading) {
+      children.add(new LinearProgressIndicator());
+    }
+
+    children.add(
+      new Card(
+        child: new Padding(
+          padding: new EdgeInsets.all(12.0),
+          child: _currentPageWidget(),
+        ),
+      ),
+    );
+
+    var actions = <Widget>[];
+    if (_controller.canStartOver) {
+      actions.add(
+        new FlatButton(
+          textColor: Colors.white,
+          onPressed: () => _controller.startOver(),
+          child: new Text("Start Over",),
+        ),
+      );
+    }
 
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Let's Vote!"),
+        actions: actions,
       ),
       body: new Container(
         color: Colors.grey[100],
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            new Card(
-              child: new Padding(
-                padding: new EdgeInsets.all(12.0),
-                child: _currentPageWidget(),
-              ),
-            ),
-          ],
+          children: children,
         ),
       ),
     );
@@ -82,8 +103,18 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
     });
   }
 
-  void showDialog(String message) {
-    // TODO: implement showDialog
+  showError(String message) async {
+    await showDialog(
+      context: context,
+      child: new AlertDialog(
+        content: new Text(message),
+      ),
+    );
+  }
+
+  @override
+  set isLoading(bool loading) {
+    setState(() => _isLoading = loading);
   }
 }
 
@@ -164,7 +195,7 @@ class _JoiningPageState extends State<JoiningPage> {
           color: Colors.blueGrey,
           textColor: Colors.white,
           child: new Text("Submit"),
-          onPressed: () => widget._controller.goTo(Page.username),
+          onPressed: () => widget._controller.join(textController.text),
         ),
       ],
     );
