@@ -9,25 +9,72 @@ class LetsVote extends StatefulWidget {
   _LetsVoteState createState() => new _LetsVoteState();
 }
 
-class _LetsVoteState extends State<LetsVote> implements AppView {
+class _LetsVoteState extends State<LetsVote> {
   AppController _controller;
-  Page _page;
-  bool _isLoading;
 
   void initState() {
-    _isLoading = false;
     super.initState();
     var client = new Client();
     var services = new AppServices(new FlutterConfigService(client));
     var appContext = new AppContext(client, services);
-    var controller = new AppController(appContext);
-    controller.init(this);
+    _controller = new AppController(appContext);
   }
 
   Widget build(BuildContext context) {
-    if (_page == null) {
-      return new CircularProgressIndicator();
+    return new PageContainer(
+      canStartOver: _controller.canStartOver,
+      onStartOver: () {
+        _controller.startOver();
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      },
+      controller: _controller,
+    );
+  }
+}
+
+class PageContainer extends StatefulWidget {
+  final Page page;
+  final bool canStartOver;
+  final VoidCallback onStartOver;
+  final AppController controller;
+
+  PageContainer({
+    this.page = Page.home,
+    this.canStartOver,
+    this.onStartOver,
+    this.controller,
+  });
+
+  State<StatefulWidget> createState() {
+    return new _PageContainerState();
+  }
+}
+
+class _PageContainerState extends State<PageContainer> implements AppView {
+  AppController _controller;
+  Page get page => widget.page;
+  bool _isLoading;
+  bool get canStartOver => widget.canStartOver;
+  VoidCallback get onStartOver => widget.onStartOver;
+
+  void initState() {
+    _isLoading = false;
+    _controller = widget.controller;
+
+    if (page == Page.home) {
+      _controller.init(this);
+      return;
     }
+
+    _controller.setView(this);
+  }
+
+  Widget build(BuildContext context) {
+    if (page == null) {
+      return new Scaffold(
+          body: new Center(child: new CircularProgressIndicator()));
+    }
+
     var children = [];
 
     if (_isLoading) {
@@ -38,22 +85,23 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
       new Card(
         child: new Padding(
           padding: new EdgeInsets.all(12.0),
-          child: _currentPageWidget(),
+          child: _pageWidget(),
         ),
       ),
     );
 
     var actions = <Widget>[];
-    if (_controller.canStartOver) {
+    if (controller.canStartOver) {
       actions.add(
         new FlatButton(
           textColor: Colors.white,
-          onPressed: () => _controller.startOver(),
-          child: new Text("Start Over",),
+          onPressed: () => onStartOver(),
+          child: new Text(
+            "Start Over",
+          ),
         ),
       );
     }
-
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Let's Vote!"),
@@ -70,36 +118,66 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
     );
   }
 
-  Widget _currentPageWidget() {
-    switch (_page) {
+  Widget _pageWidget() {
+    switch (page) {
       case Page.home:
-        return new HomePage(_controller);
+        return new HomePage(controller);
       case Page.create:
-        return new CreatePage(_controller);
+        return new CreatePage(controller);
       case Page.joining:
-        return new JoiningPage(_controller);
+        return new JoiningPage(controller);
       case Page.username:
-        return new UsernamePage(_controller);
+        return new UsernamePage(controller);
       case Page.ideaSubmission:
-        return new IdeaSubmissionPage(_controller);
+        return new IdeaSubmissionPage(controller);
       case Page.ballot:
-        return new BallotPage(_controller);
+        return new BallotPage(controller);
       case Page.waitingForVotes:
-        return new WaitingForVotesPage(_controller);
+        return new WaitingForVotesPage(controller);
       case Page.result:
-        return new ResultsPage(_controller);
+        return new ResultsPage(controller);
       default:
-        return new HomePage(_controller);
+        return new HomePage(controller);
     }
   }
 
+  AppController get controller => _controller;
+
   set controller(AppController controller) {
-    _controller = controller;
+    setState(() {
+      _controller = controller;
+    });
+  }
+
+  set isLoading(bool loading) {
+    _isLoading = loading;
   }
 
   void renderPage(Page page) {
-    setState(() {
-      _page = page;
+    if (this.page == page) {
+      setState(() {});
+      return;
+    }
+
+    if (page == Page.home) {
+      Navigator.popUntil(context, (r) => r.isFirst);
+      return;
+    }
+
+    var route = new MaterialPageRoute<Null>(builder: (BuildContext ctx) {
+      return new PageContainer(
+        page: page,
+        canStartOver: _controller.canStartOver,
+        onStartOver: () {
+          _controller.startOver();
+          Navigator.of(ctx).popUntil((r) => r.isFirst);
+        },
+        controller: _controller,
+      );
+    });
+    Navigator.of(context).push(route).then((_) {
+      // Re-attach this view to the controller;
+      _controller.setView(this);
     });
   }
 
@@ -108,13 +186,16 @@ class _LetsVoteState extends State<LetsVote> implements AppView {
       context: context,
       child: new AlertDialog(
         content: new Text(message),
+        actions: [
+          new FlatButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+            child: new Text("ok"),
+          )
+        ],
       ),
     );
-  }
-
-  @override
-  set isLoading(bool loading) {
-    setState(() => _isLoading = loading);
   }
 }
 

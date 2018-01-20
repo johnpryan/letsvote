@@ -62,12 +62,16 @@ class LvApp extends PolymerElement implements AppView {
   LvApp.created() : super.created();
 
   String get createTopic => get('createTopic');
+  void set createTopic(String s) => set('createTopic', s);
 
   String get enteredUsername => get('enteredUsername');
+  void set enteredUsername(String s) => set('enteredUsername', s);
 
   String get enteredIdea => get('enteredIdea');
+  void set enteredIdea(String s) => set('enteredIdea', s);
 
   String get enteredCode => get('enteredCode');
+  void set enteredCode(String s) => set('enteredCode', s);
 
   void set topic(String topic) => set('topic', topic);
 
@@ -147,6 +151,10 @@ class LvApp extends PolymerElement implements AppView {
 
   @reflectable
   handleStartOver(e, d) {
+    createTopic = "";
+    enteredIdea = "";
+    enteredUsername = "";
+    enteredCode = "";
     _controller.startOver();
   }
 

@@ -35,10 +35,14 @@ class AppController {
     var config = await _context.services.config.loadConfig();
     var uri = Uri.parse(config.host);
     _context.services.election = new ElectionService(_context.requester, uri);
-    _view = view;
-    _view.controller = this;
+    setView(view);
     goTo(Page.home);
     view.isLoading = false;
+  }
+
+  void setView(AppView view) {
+    _view = view;
+    _view.controller = this;
   }
 
   Idea _ideaWithName(String name) =>
@@ -58,52 +62,53 @@ class AppController {
   }
 
   Future create(String topic) async {
-    _view.isLoading = true;
+    _loadWithException(_create(topic), "Unable to create vote");
+  }
 
+  Future _create(String topic) async {
     _election = await _service.create(topic);
     goTo(Page.username);
     isCreator = true;
-
-    _view.isLoading = false;
   }
 
   Future join(String code) async {
-    _view.isLoading = true;
+    _loadWithException(
+        _join(code),
+        "Sorry, we were unable to find that vote."
+        " Make sure the code you entered is correct.");
+  }
 
+  Future _join(String code) async {
     _election = await _service.get(code);
     goTo(Page.username);
     isCreator = false;
-
-    _view.isLoading = false;
   }
 
   Future setName(String name) async {
-    _view.isLoading = true;
+    await _loadWithException(_setName(name), "That username is already taken");
+  }
 
-    try {
-      _election = await _service.join(name, _election.id);
-      _username = name;
-      goTo(Page.ideaSubmission);
-    } catch (e) {
-      _view.showError("That name is already taken");
-    } finally {
-      _view.isLoading = false;
-    }
+  Future _setName(String name) async {
+    _election = await _service.join(name, _election.id);
+    _username = name;
+    goTo(Page.ideaSubmission);
   }
 
   Future setIdea(String idea) async {
-    _view.isLoading = true;
+    _loadWithException(_setIdea(idea), "Something went wrong");
+  }
 
+  Future _setIdea(String idea) async {
     _election = await _service.submitIdea(_username, idea, _election.id);
     goTo(Page.ballot);
     _startTimer();
-
-    _view.isLoading = false;
   }
 
   Future submitVote(String vote) async {
-    _view.isLoading = true;
+    _loadWithException(_submitVote(vote), "Something went wrong");
+  }
 
+  Future _submitVote(String vote) async {
     var voter = this._currentVoter;
     var idea = this._ideaWithName(vote);
     if (idea == null) {
@@ -111,18 +116,16 @@ class AppController {
     }
     _election = await _service.vote(voter.name, idea.name, _election.id);
     goTo(Page.waitingForVotes);
-
-    _view.isLoading = false;
   }
 
   Future submitClose(String electionId) async {
-    _view.isLoading = true;
+    _loadWithException(_submitClose(electionId), "Something went wrong");
+  }
 
+  Future _submitClose(String electionId) async {
     _election = await _service.close(_election.id);
     _timer.cancel();
     goTo(Page.result);
-
-    _view.isLoading = false;
   }
 
   bool get canStartOver {
@@ -130,6 +133,8 @@ class AppController {
   }
 
   void startOver() {
+    _timer?.cancel();
+    _timer = null;
     _election = null;
     _username = "";
     isCreator = false;
@@ -156,6 +161,19 @@ class AppController {
     }
 
     goTo(Page.result);
+  }
+
+  // Tries to perform the async operation and displays a message if it throws an
+  // exception
+  Future _loadWithException(Future op, String message) async {
+    _view.isLoading = true;
+    try {
+      await op;
+    } catch (e) {
+      _view.showError(message);
+    } finally {
+      _view.isLoading = false;
+    }
   }
 }
 
