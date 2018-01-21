@@ -205,7 +205,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new PaddedColumn(
       children: <Widget>[
-        new Text("Let's Vote!"),
+        new Image.asset(
+          "assets/letsvote-logo.png",
+          height: 160.0,
+          fit: BoxFit.contain,
+        ),
         new Text("Create a new vote or join an existing vote"),
         new MaterialButton(
           color: Colors.blueGrey,
