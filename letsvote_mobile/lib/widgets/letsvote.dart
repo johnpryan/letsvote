@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 import 'package:letsvote/controllers.dart';
 import 'package:letsvote/model.dart';
 import 'package:letsvote/services.dart';
+import 'package:letsvote/views.dart';
 import 'package:letsvote_mobile/services.dart';
 
 class LetsVote extends StatefulWidget {
@@ -14,15 +15,17 @@ class _LetsVoteState extends State<LetsVote> {
 
   void initState() {
     super.initState();
+
+    // Initialize the controller for the app.
     var client = new Client();
-    var services = new AppServices(new FlutterConfigService(client));
-    var appContext = new AppContext(client, services);
-    _controller = new AppController(appContext);
+    var configService = new FlutterConfigService(client);
+    var services = new AppServices(client, configService);
+    _controller = new AppController(services);
   }
 
   Widget build(BuildContext context) {
     return new PageContainer(
-      canStartOver: _controller.canStartOver,
+      showRestart: !_controller.isHomePage,
       onStartOver: () {
         _controller.startOver();
         Navigator.of(context).popUntil((r) => r.isFirst);
@@ -32,15 +35,16 @@ class _LetsVoteState extends State<LetsVote> {
   }
 }
 
+/// A widget that displays any given page for the app. Uses the navigator if
 class PageContainer extends StatefulWidget {
   final Page page;
-  final bool canStartOver;
+  final bool showRestart;
   final VoidCallback onStartOver;
   final AppController controller;
 
   PageContainer({
     this.page = Page.home,
-    this.canStartOver,
+    this.showRestart,
     this.onStartOver,
     this.controller,
   });
@@ -51,13 +55,15 @@ class PageContainer extends StatefulWidget {
 }
 
 class _PageContainerState extends State<PageContainer> implements AppView {
-  AppController _controller;
+  AppPresenter _controller;
   Page get page => widget.page;
   bool _isLoading;
-  bool get canStartOver => widget.canStartOver;
+  bool get showRestart => widget.showRestart;
   VoidCallback get onStartOver => widget.onStartOver;
 
   void initState() {
+    super.initState();
+
     _isLoading = false;
     _controller = widget.controller;
 
@@ -79,6 +85,8 @@ class _PageContainerState extends State<PageContainer> implements AppView {
 
     if (_isLoading) {
       children.add(new LinearProgressIndicator());
+    } else {
+      children.add(new Container(height: 6.0));
     }
 
     children.add(
@@ -91,7 +99,7 @@ class _PageContainerState extends State<PageContainer> implements AppView {
     );
 
     var actions = <Widget>[];
-    if (controller.canStartOver) {
+    if (showRestart) {
       actions.add(
         new FlatButton(
           textColor: Colors.white,
@@ -143,31 +151,37 @@ class _PageContainerState extends State<PageContainer> implements AppView {
 
   AppController get controller => _controller;
 
-  set controller(AppController controller) {
+  set controller(AppPresenter controller) {
     setState(() {
       _controller = controller;
     });
   }
 
   set isLoading(bool loading) {
-    _isLoading = loading;
+    setState(() {
+      _isLoading = loading;
+    });
   }
 
   void renderPage(Page page) {
+    // Don't navigate if render() is called with the current page
     if (this.page == page) {
       setState(() {});
       return;
     }
 
+    // If the user is navigating to the home page, the navigator stack should be
+    // popped so that the user is taken back
     if (page == Page.home) {
       Navigator.popUntil(context, (r) => r.isFirst);
       return;
     }
 
+    // Use the navigator to navigate the user to the new page
     var route = new MaterialPageRoute<Null>(builder: (BuildContext ctx) {
       return new PageContainer(
         page: page,
-        canStartOver: _controller.canStartOver,
+        showRestart: !_controller.isHomePage,
         onStartOver: () {
           _controller.startOver();
           Navigator.of(ctx).popUntil((r) => r.isFirst);
@@ -175,8 +189,9 @@ class _PageContainerState extends State<PageContainer> implements AppView {
         controller: _controller,
       );
     });
+
+    // When the route is finished, re-attach the controller to this view.
     Navigator.of(context).push(route).then((_) {
-      // Re-attach this view to the controller;
       _controller.setView(this);
     });
   }
@@ -473,6 +488,7 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 }
 
+/// Displays elements in a column with padding
 class PaddedColumn extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final List<Widget> children;

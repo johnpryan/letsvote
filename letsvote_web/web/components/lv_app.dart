@@ -4,6 +4,7 @@ library lv_app;
 import 'dart:async';
 
 import 'package:letsvote/services.dart';
+import 'package:letsvote/views.dart';
 import 'package:letsvote_web/services.dart';
 import 'package:polymer/polymer.dart';
 import 'package:web_components/web_components.dart';
@@ -61,45 +62,32 @@ class LvApp extends PolymerElement implements AppView {
 
   LvApp.created() : super.created();
 
-  String get createTopic => get('createTopic');
-  void set createTopic(String s) => set('createTopic', s);
-
-  String get enteredUsername => get('enteredUsername');
-  void set enteredUsername(String s) => set('enteredUsername', s);
-
-  String get enteredIdea => get('enteredIdea');
-  void set enteredIdea(String s) => set('enteredIdea', s);
-
-  String get enteredCode => get('enteredCode');
-  void set enteredCode(String s) => set('enteredCode', s);
-
-  void set topic(String topic) => set('topic', topic);
-
-  void set code(String code) => set('code', code);
-
-  void set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
-
-  String get selectedVoteIdea => get('selectedVoteIdea');
-
-  void set isCreator(bool b) => set('isCreator', b);
-
-  void set winner(String v) => set('winner', v);
-
-  void set winnerAuthor(String v) => set('winnerAuthor', v);
-
-  void set winnerVotes(int v) => set('winnerVotes', v);
-
-  void set canStartOver(bool v) => set('canStartOver', v);
-
-  void set entryAnimation(String v) => set('entryAnimation', v);
-
-  void set exitAnimation(String v) => set('exitAnimation', v);
+  // Polymer properties
+  get createTopic => get('createTopic');
+  set createTopic(String s) => set('createTopic', s);
+  get enteredUsername => get('enteredUsername');
+  set enteredUsername(String s) => set('enteredUsername', s);
+  get enteredIdea => get('enteredIdea');
+  set enteredIdea(String s) => set('enteredIdea', s);
+  get enteredCode => get('enteredCode');
+  set enteredCode(String s) => set('enteredCode', s);
+  set topic(String topic) => set('topic', topic);
+  set code(String code) => set('code', code);
+  set voteIdeas(List<String> ideas) => set('voteIdeas', ideas);
+  get selectedVoteIdea => get('selectedVoteIdea');
+  set isCreator(bool b) => set('isCreator', b);
+  set winner(String v) => set('winner', v);
+  set winnerAuthor(String v) => set('winnerAuthor', v);
+  set winnerVotes(int v) => set('winnerVotes', v);
+  set showRestart(bool v) => set('canStartOver', v);
+  set entryAnimation(String v) => set('entryAnimation', v);
+  set exitAnimation(String v) => set('exitAnimation', v);
 
   Future<Null> ready() async {
     var client = new BrowserClient();
-    var services = new AppServices(new BrowserConfigService(client));
-    var appContext = new AppContext(client, services);
-    var controller = new AppController(appContext);
+    var configService = new BrowserConfigService(client);
+    var services = new AppServices(client, configService);
+    var controller = new AppController(services);
 
     await controller.init(this);
   }
@@ -170,11 +158,11 @@ class LvApp extends PolymerElement implements AppView {
     winner = _controller?.winnerName;
     winnerAuthor = _controller?.winnerAuthor;
     winnerVotes = _controller?.winnerVotes;
-    canStartOver = _controller?.canStartOver ?? false;
+    showRestart = _controller?.isHomePage != true;
   }
 
-  void set controller(AppController controller) {
-    _controller = controller;
+  void set controller(AppPresenter presenter) {
+    _controller = presenter;
   }
 
   void showError(String message) {

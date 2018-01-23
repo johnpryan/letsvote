@@ -1,3 +1,4 @@
+/// Data types for the app. Uses json_serializable to generate serializers
 library letsvote.model;
 
 import 'package:json_annotation/json_annotation.dart';

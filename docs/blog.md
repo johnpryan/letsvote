@@ -1,9 +1,15 @@
-# Sharing is Caring
+Cross-platform application development has a long history. But at AppTree,
+we've chosen to stick to native development for our mission-critical apps.
+
+At the beginning of 2016, we had Android (Kotlin) and iOS (Swift) apps in our
+users's hands. But our users needed to use our apps on the Web, so we
+embarked on creating a Dart implementation.
+
+Now, after a long relationship with native iOS and Android development, we are
+ending it. We've met someone new, named Flutter.
 
 There are [many tactics][code-reuse-tactics] for making code reusable. Most of
-these focus on reusing code within the same app or project. For example, a
-codebase that implements `calculateSalesTax()` for each product will be hard to
-maintain.
+these focus on reusing code within the same app or project.
 
 But the type of reuse that is required for client-side programming is much more
 difficult. An app may need to ship to all three of the major client-side
@@ -22,11 +28,11 @@ At AppTree, we calculate that we share ~70% of our codebase between all three
 platforms. These are some tactics that worked for us. They are simple rules, but
 not necessarily easy to implement. This post will focus on three rules:
 
-1. Use a layered architecture
-2. Remove logic from views.
-3. Inject dependencies
+1. Use Layers
+2. Simple Views
+3. Inject Dependencies
 
-## Layered architecture
+## Use Layers
 
 Layering is a very common technique for breaking apart a complicated app. In the
 context of client-side applications, the views and services are decoupled from
@@ -34,36 +40,43 @@ the rest of the application:
 
 ![layers](layers.png)
 
-The Model is placed outside of the stack because it is often desirable to share
-common types throughout your application, but this is not required. Usually it's
-cumbersome to make each layer define it's own types. For example, three types
-for UserLoginResponse (services), User (controllers), and UserViewModel
-(views) may be overkill for your app.
+Each layer is decoupled from the others by library. For example, the Services
+layer never imports a controller. It's job is only to provide an api for higher
+layers. The idea is that layers only access the layer directly below it.
 
-The Controller is a placeholder for any important domain-specific code. It
-does not necessarily mean to use a controller class. In fact, this layer can be
+Services are typically classes that interact a remote server, or the platform.
+Firebase, JSON / HTTP services, Websockets, filesystem access, etc are all
+examples of a service.
+
+The Controller layer contains your app's important domain-specific code. It does
+not necessarily mean to use a controller class. In fact, this layer can be
 completely replaced with other patterns (Redux, Flux, or any other *Ux.) The
 important thing is that the Views and Services are treated as abstract
 interfaces.
 
 The Views are where widgets (Flutter) and components (web) are defined.
-Typically there is a higher-level view or widget that the controller is
-interacting with. This view is not reusable across apps, but it may use views
-that are very simple and reusable. It has a 1-to-1 relationship with the
-controller. Views can be independent of their controller (simple), or treat their
-controller as a Presenter (smart).
+Typically, the controller is interacting with a Component (Web) or Widget
+(Flutter) that implements an abstract interface:
+ 
+ ```
+ abstract class MyView {
+  Stream<Event> get onEvent;
+  void render(State state);
+ }
+ ```
+ 
+ This allows Flutter and Web apps to know what API the controller layer is
+ expecting from it's view.
+ 
+There are different patterns for the Controller-View relationship, but typically
+there is a 1-to-1 relationship with the controller. Views can be independent of
+their controller (simple), or treat their controller as a Presenter (smart).
 
-TODO: image
-
-Services are any piece of your app that interacts with the platform or a remote
-server. Firebase, JSON / HTTP services, Websockets, filesystem access, etc are
-all examples of a service.
-
-There are use-cases that don't lend themselves well to this layered
+Caveat: There are use-cases that don't lend themselves to this layered
 architecture. For example, a map. It makes much more sense to make the Views
-(implemented in both Flutter or Web) responsible for using their own "service"
-for displaying a map. On Flutter, it would be a Widget using a Plugin
-(package:map_view) and an HTML library on web (package:google_maps) 
+(implemented in both Flutter or Web) responsible for their own "service" for
+displaying a map. On Flutter, it would be a Widget using a Plugin
+(package:map_view) and an HTML library on web (package:google_maps).
 
 ## Remove View Logic
 
@@ -74,40 +87,58 @@ Flutter app, you may want:
 2. To build command-line tools for interacting with services
 3. A cleaner library and package structure
 
-If you are also targeting web, you may want:
- 
-1. To make big changes to your architecture 
-2. Fix bugs once
-
-So as a rule of thumb, remove as much important logic from views as possible.
-
-## Inject dependencies
-
-Services may need to use different implementations on each platform. Firebase is
-one example. You may choose to implement a high-level wrapper around your
-firebase services and use the Flutter plugin on mobile, and the JavaScript
-wrapper on web. For example:
+Once the important code is moved out, it becomes possible to run tests.
+Sometimes, platform-specific libraries will be accidentally moved into the
+controller layer. A quick strategy for diagnosing this problem is to write test that
+only runs on the VM:
 
 ```dart
-abstract class MyFirebaseService {
-  void save(AppData data);
-  Stream<AppData> get onChanged;
-  void init();
-  void dispose();
+@TestOn("vm")
+library controller_test;
+
+import 'package:myapp/controllers.dart';
+import 'package:test/test.dart';
+
+void main() {
+ group("controller", () {
+   test("is pure dart", () {
+     var controller = new AppController();
+   });
+ });
 }
 ```
 
-This abstract service can be declared as a dependency:
+Then finding the culprit becomes easy:
+
+![culprit](culprit.png)
+
+## Inject Dependencies
+
+Services may need to use different implementations on each platform. Say we had
+a service and a cache:
 
 ```dart
+abstract class MyService {
+  Future<MyData> fetchData();
+}
+
+abstract class MyCache {
+  void cacheData(MyData data);
+} 
+
 class AppController {
-  final MyFirebaseService _firebase;
-  AppController(this._firebase);
+  final MyService _service;
+  final MyCache _cache;
+  
+  AppController(this._service, this._cache);
+  //...
 }
 ```
 
-And each entrypoint will create the `AppController` with the platform-specific
-implementation.
+Now each entrypoint has a well-defined API for creating the `AppController` with
+the platform-specific dependencies. The Flutter app would import and inject a
+FlutterService and the Web app would import and inject a
+BrowserService.
 
 ## Example
 
@@ -323,15 +354,14 @@ https://letsvote-dart.herokuapp.com/
 
 ## Closing thoughts
 
-We've found that following these three rules allows us to share the most code
-between mobile and web:
-
-1. Use a layered architecture
-2. Remove logic from views
-3. Inject dependencies
-
-But don't overdo it. Refactoring is fun (code golf at work!), but can be a time
-sink.
+We've found that  using layers, simplifying views, and injecting dependencies
+allows us to share the most code between our Flutter app and web app. We
+calculate we are shaing 70% of our code (we include unit tests in this
+calculation) across all three platforms. But it's not the amount of sharing,
+it's *what* is being shared. Our apps share most critical code, the "brain" of
+our app. Instead of each platform being ahead or behind the others, all of our
+apps are up to date. Each person is focused on new features and improvements,
+not re-implementing existing work for another platform.
 
 ## FAQ
 

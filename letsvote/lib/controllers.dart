@@ -1,29 +1,22 @@
 import 'dart:async';
 
-import 'package:http/http.dart';
 import 'package:letsvote/model.dart';
 import 'package:letsvote/services.dart';
-import 'package:requester/requester.dart';
+import 'package:letsvote/views.dart';
 
-class AppContext {
-  final Requester requester;
-  final AppServices services;
-
-  AppContext(Client client, this.services) : requester = new Requester(client);
-}
-
-class AppController {
-  final AppContext _context;
+/// The logic four our app.
+class AppController implements AppPresenter {
+  AppServices _services;
   Election _election;
   AppView _view;
   String _username;
   bool isCreator;
   Page _currentPage;
 
-  AppController(this._context);
+  AppController(this._services);
 
   Election get election => _election;
-  ElectionService get _service => _context.services.election;
+  ElectionService get _service => _services.election;
   Voter get _currentVoter =>
       _election.voters.firstWhere((v) => v.name == _username);
   String get winnerName => _election?.winner?.name ?? "";
@@ -32,11 +25,18 @@ class AppController {
 
   Future init(AppView view) async {
     view.isLoading = true;
-    var config = await _context.services.config.loadConfig();
+
+    // Load the app configuration
+    var config = await _services.config.loadConfig();
     var uri = Uri.parse(config.host);
-    _context.services.election = new ElectionService(_context.requester, uri);
+
+    // Create the election service
+    _services.createElectionService(uri);
+
+    // Show the Home page
     setView(view);
     goTo(Page.home);
+
     view.isLoading = false;
   }
 
@@ -61,6 +61,7 @@ class AppController {
     goTo(Page.joining);
   }
 
+  /// Creates a new election and makes the current user the owner.
   Future create(String topic) async {
     _loadWithException(_create(topic), "Unable to create vote");
   }
@@ -71,6 +72,7 @@ class AppController {
     isCreator = true;
   }
 
+  /// Joins an election given a [code]
   Future join(String code) async {
     _loadWithException(
         _join(code),
@@ -84,6 +86,7 @@ class AppController {
     isCreator = false;
   }
 
+  /// Adds a new user to the election.
   Future setName(String name) async {
     await _loadWithException(_setName(name), "That username is already taken");
   }
@@ -94,6 +97,7 @@ class AppController {
     goTo(Page.ideaSubmission);
   }
 
+  /// Submits an idea to the current election.
   Future setIdea(String idea) async {
     _loadWithException(_setIdea(idea), "Something went wrong");
   }
@@ -101,6 +105,7 @@ class AppController {
   Future _setIdea(String idea) async {
     _election = await _service.submitIdea(_username, idea, _election.id);
     goTo(Page.ballot);
+    // Poll the election on an interval
     _startTimer();
   }
 
@@ -128,8 +133,8 @@ class AppController {
     goTo(Page.result);
   }
 
-  bool get canStartOver {
-    return this._currentPage != Page.home;
+  bool get isHomePage {
+    return this._currentPage == null || this._currentPage == Page.home;
   }
 
   void startOver() {
@@ -163,34 +168,16 @@ class AppController {
     goTo(Page.result);
   }
 
-  // Tries to perform the async operation and displays a message if it throws an
-  // exception
-  Future _loadWithException(Future op, String message) async {
+  /// Runs the [operation] and alerts the view if there is an
+  /// exception.
+  Future _loadWithException(Future operation, String message) async {
     _view.isLoading = true;
     try {
-      await op;
+      await operation;
     } catch (e) {
       _view.showError(message);
     } finally {
       _view.isLoading = false;
     }
   }
-}
-
-abstract class AppView {
-  void renderPage(Page state);
-  void set controller(AppController controller);
-  void showError(String message);
-  void set isLoading(bool loading);
-}
-
-enum Page {
-  home, // create or join
-  create, // enter topic
-  joining, // enter id (skipped if using create)
-  username, // enter username
-  ideaSubmission, // enter an candidate
-  ballot, // display each candidate (idea) and pick one
-  waitingForVotes, // wait for the polls to close
-  result, // show the winner
 }

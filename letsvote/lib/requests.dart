@@ -1,3 +1,6 @@
+/// Implementations of package:http requests
+library letsvote.requests;
+
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:letsvote/model.dart';
