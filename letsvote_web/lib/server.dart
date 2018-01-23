@@ -3,7 +3,7 @@ library letsvote.server;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:letsvote/election_server.dart';
+import 'package:letsvote/server.dart';
 import 'package:letsvote/model.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_route/shelf_route.dart';
