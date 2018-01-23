@@ -1,6 +1,9 @@
 # letsvote
 
 LetsVote demonstrates how code can be shared across web, mobile, and the server.
+Check out the [blog
+post](https://medium.com/@john.p.ryan4/sharing-code-on-ios-android-and-web-85e8ed7dfccd)
+for more detail.
 
 It uses Flutter for iOS / Android, Polymer for the web, and
 [shelf](https://pub.dartlang.org/packages/shelf) on the server
