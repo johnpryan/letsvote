@@ -7,11 +7,23 @@ import 'package:letsvote/requests.dart' as requests;
 import 'package:yaml/yaml.dart';
 
 class AppServices {
+  final Client client;
   final ConfigService config;
+  final Requester requester;
+
   ElectionService election;
-  AppServices(this.config);
+
+  AppServices(this.client, this.config) : requester = new Requester(client);
+
+  void createElectionService(Uri host) {
+    election = new ElectionService(requester, host);
+  }
 }
 
+/// [ConfigService] is used to allow apps to be configured to run against other
+/// servers.
+///
+/// Loads and parses a YAML configuration into an [AppConfig]
 abstract class ConfigService {
   final Client client;
 
@@ -25,6 +37,8 @@ abstract class ConfigService {
   }
 }
 
+/// Makes HTTP requests to perform various operations on an election. Each
+/// method returns the latest state of the [Election].
 class ElectionService {
   final Requester requester;
   final Uri host;

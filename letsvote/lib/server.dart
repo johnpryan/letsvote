@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:letsvote/model.dart';
 
@@ -53,7 +54,7 @@ class ElectionServer {
         .firstWhere((i) => i.name == ideaName, orElse: () => null);
 
     if (existing == null) {
-      // todo: error handling
+      // Consider error handling
       return election;
     }
 
@@ -69,6 +70,7 @@ class ElectionServer {
   }
 
   String _getNextId() {
+    // Generate until the id is unique
     String next;
     do {
       next = _generateFourDigitId();

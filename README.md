@@ -30,7 +30,11 @@ pub run bin/server.dart
 
 # Configuration
 
-Use `letsvote_web/web/config.yaml` to configure what server the web connects to.
+To configure the web server each app points to:
+
+*Web:* Use `letsvote_web/web/config.yaml`
+
+*Flutter:* Use `letsvote_mobile/config.yaml` to configure what server the web connects to.
 
 # IntellJ multi-module setup
 

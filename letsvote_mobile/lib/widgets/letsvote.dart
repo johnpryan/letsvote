@@ -3,87 +3,214 @@ import 'package:http/http.dart';
 import 'package:letsvote/controllers.dart';
 import 'package:letsvote/model.dart';
 import 'package:letsvote/services.dart';
+import 'package:letsvote/views.dart';
 import 'package:letsvote_mobile/services.dart';
 
 class LetsVote extends StatefulWidget {
   _LetsVoteState createState() => new _LetsVoteState();
 }
 
-class _LetsVoteState extends State<LetsVote> implements AppView {
+class _LetsVoteState extends State<LetsVote> {
   AppController _controller;
-  Page _page;
 
   void initState() {
     super.initState();
+
+    // Initialize the controller for the app.
     var client = new Client();
-    var services = new AppServices(new FlutterConfigService(client));
-    var appContext = new AppContext(client, services);
-    var controller = new AppController(appContext);
-    controller.init(this);
+    var configService = new FlutterConfigService(client);
+    var services = new AppServices(client, configService);
+    _controller = new AppController(services);
   }
 
   Widget build(BuildContext context) {
-    if (_page == null) {
-      return new CircularProgressIndicator();
+    return new PageContainer(
+      showRestart: !_controller.isHomePage,
+      onStartOver: () {
+        _controller.startOver();
+        Navigator.of(context).popUntil((r) => r.isFirst);
+      },
+      controller: _controller,
+    );
+  }
+}
+
+/// A widget that displays any given page for the app. Uses the navigator if
+class PageContainer extends StatefulWidget {
+  final Page page;
+  final bool showRestart;
+  final VoidCallback onStartOver;
+  final AppController controller;
+
+  PageContainer({
+    this.page = Page.home,
+    this.showRestart,
+    this.onStartOver,
+    this.controller,
+  });
+
+  State<StatefulWidget> createState() {
+    return new _PageContainerState();
+  }
+}
+
+class _PageContainerState extends State<PageContainer> implements AppView {
+  AppPresenter _controller;
+  Page get page => widget.page;
+  bool _isLoading;
+  bool get showRestart => widget.showRestart;
+  VoidCallback get onStartOver => widget.onStartOver;
+
+  void initState() {
+    super.initState();
+
+    _isLoading = false;
+    _controller = widget.controller;
+
+    if (page == Page.home) {
+      _controller.init(this);
+      return;
     }
 
+    _controller.setView(this);
+  }
+
+  Widget build(BuildContext context) {
+    if (page == null) {
+      return new Scaffold(
+          body: new Center(child: new CircularProgressIndicator()));
+    }
+
+    var children = [];
+
+    if (_isLoading) {
+      children.add(new LinearProgressIndicator());
+    } else {
+      children.add(new Container(height: 6.0));
+    }
+
+    children.add(
+      new Card(
+        child: new Padding(
+          padding: new EdgeInsets.all(12.0),
+          child: _pageWidget(),
+        ),
+      ),
+    );
+
+    var actions = <Widget>[];
+    if (showRestart) {
+      actions.add(
+        new FlatButton(
+          textColor: Colors.white,
+          onPressed: () => onStartOver(),
+          child: new Text(
+            "Start Over",
+          ),
+        ),
+      );
+    }
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Let's Vote!"),
+        actions: actions,
       ),
       body: new Container(
         color: Colors.grey[100],
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            new Card(
-              child: new Padding(
-                padding: new EdgeInsets.all(12.0),
-                child: _currentPageWidget(),
-              ),
-            ),
-          ],
+          children: children,
         ),
       ),
     );
   }
 
-  Widget _currentPageWidget() {
-    switch (_page) {
+  Widget _pageWidget() {
+    switch (page) {
       case Page.home:
-        return new HomePage(_controller);
+        return new HomePage(controller);
       case Page.create:
-        return new CreatePage(_controller);
+        return new CreatePage(controller);
       case Page.joining:
-        return new JoiningPage(_controller);
+        return new JoiningPage(controller);
       case Page.username:
-        return new UsernamePage(_controller);
+        return new UsernamePage(controller);
       case Page.ideaSubmission:
-        return new IdeaSubmissionPage(_controller);
+        return new IdeaSubmissionPage(controller);
       case Page.ballot:
-        return new BallotPage(_controller);
+        return new BallotPage(controller);
       case Page.waitingForVotes:
-        return new WaitingForVotesPage(_controller);
+        return new WaitingForVotesPage(controller);
       case Page.result:
-        return new ResultsPage(_controller);
+        return new ResultsPage(controller);
       default:
-        return new HomePage(_controller);
+        return new HomePage(controller);
     }
   }
 
-  set controller(AppController controller) {
-    _controller = controller;
-  }
+  AppController get controller => _controller;
 
-  void renderPage(Page page) {
+  set controller(AppPresenter controller) {
     setState(() {
-      _page = page;
+      _controller = controller;
     });
   }
 
-  void showDialog(String message) {
-    // TODO: implement showDialog
+  set isLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
+  void renderPage(Page page) {
+    // Don't navigate if render() is called with the current page
+    if (this.page == page) {
+      setState(() {});
+      return;
+    }
+
+    // If the user is navigating to the home page, the navigator stack should be
+    // popped so that the user is taken back
+    if (page == Page.home) {
+      Navigator.popUntil(context, (r) => r.isFirst);
+      return;
+    }
+
+    // Use the navigator to navigate the user to the new page
+    var route = new MaterialPageRoute<Null>(builder: (BuildContext ctx) {
+      return new PageContainer(
+        page: page,
+        showRestart: !_controller.isHomePage,
+        onStartOver: () {
+          _controller.startOver();
+          Navigator.of(ctx).popUntil((r) => r.isFirst);
+        },
+        controller: _controller,
+      );
+    });
+
+    // When the route is finished, re-attach the controller to this view.
+    Navigator.of(context).push(route).then((_) {
+      _controller.setView(this);
+    });
+  }
+
+  showError(String message) async {
+    await showDialog(
+      context: context,
+      child: new AlertDialog(
+        content: new Text(message),
+        actions: [
+          new FlatButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+            child: new Text("ok"),
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -93,7 +220,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new PaddedColumn(
       children: <Widget>[
-        new Text("Let's Vote!"),
+        new Image.asset(
+          "assets/letsvote-logo.png",
+          height: 160.0,
+          fit: BoxFit.contain,
+        ),
         new Text("Create a new vote or join an existing vote"),
         new MaterialButton(
           color: Colors.blueGrey,
@@ -164,7 +295,7 @@ class _JoiningPageState extends State<JoiningPage> {
           color: Colors.blueGrey,
           textColor: Colors.white,
           child: new Text("Submit"),
-          onPressed: () => widget._controller.goTo(Page.username),
+          onPressed: () => widget._controller.join(textController.text),
         ),
       ],
     );
@@ -357,6 +488,7 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 }
 
+/// Displays elements in a column with padding
 class PaddedColumn extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final List<Widget> children;
