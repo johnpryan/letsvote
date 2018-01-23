@@ -51,6 +51,11 @@
             color: white;
         }
 
+        .code-big {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
     </style>
     <template>
         <paper-toolbar>
@@ -114,7 +119,7 @@
                     <!-- Page.username -->
                     <paper-card class="card">
                         <div class="card-content">
-                            <p>code: [[code]]</p>
+                            <p>Your election code is <span class="code-big">[[code]]</span></p>
                             <p>Enter your name:</p>
                             <paper-input placeholder="John Doe"
                                          value="{{enteredUsername}}"></paper-input>
@@ -128,8 +133,8 @@
                     <!-- Page.ideaSubmission -->
                     <paper-card class="card">
                         <div class="card-content">
-                            <p>code: [[code]]</p>
-                            <p>Topic: [[topic]]</p>
+                            <p>Your election code is <span class="code-big">[[code]]</span></p>
+                            <h3>[[topic]]</h3>
                             <p>Enter an idea:</p>
                             <paper-input placeholder="Idea"
                                          value="{{enteredIdea}}"></paper-input>
@@ -143,8 +148,8 @@
                     <!-- Page.ballot -->
                     <paper-card class="card">
                         <div class="card-content">
-                            <p>code: [[code]]</p>
-                            <p>Topic: [[topic]]</p>
+                            <p>Your election code is <span class="code-big">[[code]]</span></p>
+                            <h3>[[topic]]</h3>
                             <p>You don't have to vote yet! More options may
                                 appear.</p>
                             <paper-radio-group selected="{{selectedVoteIdea}}">
@@ -164,8 +169,8 @@
                     <!-- Page.waitingForVotes -->
                     <paper-card class="card">
                         <div class="card-content">
-                            <p>code: [[code]]</p>
-                            <p>Topic: [[topic]]</p>
+                            <p>Your election code is <span class="code-big">[[code]]</span></p>
+                            <h3>[[topic]]</h3>
                             <p>waiting for the polls to close...</p>
                             <template is="dom-if" if="[[isCreator]]">
                                 <paper-button raised on-tap="closePolls"
@@ -180,8 +185,8 @@
                     <!-- Page.result -->
                     <paper-card class="card">
                         <div class="card-content">
-                            <p>code: [[code]]</p>
-                            <p>Topic: [[topic]]</p>
+                            <p>Your election code is <span class="code-big">[[code]]</span></p>
+                            <h3>[[topic]]</h3>
                             <p>Winner: [[winner]]</p>
                             <p>Author: [[winnerAuthor]]</p>
                             <p>Votes: [[winnerVotes]]</p>

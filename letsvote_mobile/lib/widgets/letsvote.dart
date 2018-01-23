@@ -6,6 +6,9 @@ import 'package:letsvote/services.dart';
 import 'package:letsvote/views.dart';
 import 'package:letsvote_mobile/services.dart';
 
+const TextStyle codeStyle = const TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold);
+const TextStyle topicStyle = const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
+
 class LetsVote extends StatefulWidget {
   _LetsVoteState createState() => new _LetsVoteState();
 }
@@ -320,7 +323,8 @@ class _UsernamePageState extends State<UsernamePage> {
   Widget build(BuildContext context) {
     return new PaddedColumn(
       children: <Widget>[
-        new Text("code: ${election.id}"),
+        new Text("Your election code is"),
+        new Text("${election.id}", style: codeStyle,),
         new Text("Enter your name:"),
         new TextField(controller: textController),
         new MaterialButton(
@@ -353,8 +357,9 @@ class _IdeaSubmissionPageState extends State<IdeaSubmissionPage> {
       padding: new EdgeInsets.all(8.0),
       children: <Widget>[
         new Text("Enter an Idea"),
-        new Text("code: ${election.id}"),
-        new Text("Topic: ${election.topic}"),
+        new Text("Your election code is"),
+        new Text("${election.id}", style: codeStyle,),
+        new Text("${election.topic}",style: topicStyle),
         new TextField(controller: textController),
         new MaterialButton(
           color: Colors.blueGrey,
@@ -383,8 +388,9 @@ class _BallotPage extends State<BallotPage> {
 
   Widget build(BuildContext context) {
     var children = <Widget>[
-      new Text("code: ${election.id}"),
-      new Text("Topic: ${election.topic}"),
+      new Text("Your election code is"),
+      new Text("${election.id}", style: codeStyle,),
+      new Text("${election.topic}",style: topicStyle),
       new Text("You don't have to vote yet! More options may appear."),
     ];
 
@@ -438,8 +444,9 @@ class _WaitingForVotesPageState extends State<WaitingForVotesPage> {
 
   Widget build(BuildContext context) {
     var children = <Widget>[
-      new Text("code: ${election.id}"),
-      new Text("Topic: ${election.topic}"),
+      new Text("Your election code is"),
+      new Text("${election.id}", style: codeStyle,),
+      new Text("${election.topic}",style: topicStyle),
       new Text("waiting for the polls to close..."),
     ];
 
@@ -475,8 +482,7 @@ class _ResultsPageState extends State<ResultsPage> {
 
   Widget build(BuildContext context) {
     var children = <Widget>[
-      new Text("code: ${election.id}"),
-      new Text("Topic: ${election.topic}"),
+      new Text("${election.topic}",style: topicStyle),
       new Text("Winner: ${election.winner.name}"),
       new Text("Author: ${election.winner.authorName}"),
       new Text("Votes: ${election.winner.votes}"),
