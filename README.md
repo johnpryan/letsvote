@@ -1,3 +1,5 @@
+**Important Note** This example app uses Dart 1. If you are just getting started with Dart, you are likely using Dart 2 by now, and you won't be able to run the web app. If you would like to contribute to upgrading the polymer app to AngularDart please feel free to let me know!
+
 # letsvote
 
 LetsVote demonstrates how code can be shared across web, mobile, and the server.
